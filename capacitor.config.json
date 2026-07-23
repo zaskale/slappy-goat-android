@@ -1,0 +1,19 @@
+{
+  "appId": "com.slappybird.goat",
+  "appName": "Slappy Goat",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#0b1220",
+    "webContentsDebuggingEnabled": false
+  },
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0b1220"
+    }
+  }
+}

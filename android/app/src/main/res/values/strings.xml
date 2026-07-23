@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Slappy Goat</string>
+    <string name="title_activity_main">Slappy Goat</string>
+    <string name="package_name">com.slappybird.goat</string>
+    <string name="custom_url_scheme">com.slappybird.goat</string>
+</resources>

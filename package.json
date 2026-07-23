@@ -1,0 +1,23 @@
+{
+  "name": "slappy-goat-android",
+  "version": "1.0.0",
+  "description": "Slappy Goat — portrait mode Android game",
+  "private": true,
+  "scripts": {
+    "sync": "npx cap sync android",
+    "open": "npx cap open android",
+    "build:apk": "cd android && ./gradlew assembleDebug",
+    "build:release": "cd android && ./gradlew assembleRelease"
+  },
+  "keywords": ["game", "android", "slappy-goat"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/app": "^7.1.0",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/haptics": "^7.0.2",
+    "@capacitor/status-bar": "^7.0.3"
+  }
+}

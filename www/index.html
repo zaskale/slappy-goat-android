@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="screen-orientation" content="portrait" />
+  <title>Slappy Goat</title>
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="vignette"></div>
+    <div id="edge-glow"></div>
+    <div id="flash"></div>
+    <div id="confetti" class="hidden" aria-hidden="true"></div>
+    <div id="toast" class="hidden"></div>
+
+    <!-- In-game HUD -->
+    <div id="hud" class="hidden">
+      <div id="score-pill">
+        <span id="score-value">0</span>
+      </div>
+      <div id="spins-pill" class="hidden">
+        <span class="spins-label">Spins</span>
+        <span id="spins-value">0</span>
+      </div>
+      <button id="pause-btn" class="icon-btn" type="button" aria-label="Pause">❚❚</button>
+      <div id="float-score" class="hidden">+1</div>
+    </div>
+
+    <!-- Tap tutorial (first runs) -->
+    <div id="tutorial" class="hidden">
+      <div class="tap-ring"></div>
+      <p>Tap to leap</p>
+    </div>
+
+    <!-- Start screen -->
+    <div id="start-screen" class="overlay">
+      <div class="panel hero-panel">
+        <div class="logo">
+          <span class="logo-icon" aria-hidden="true">🐐</span>
+          <h1>Slappy Goat</h1>
+          <p class="tagline">Tap. Leap. Survive.</p>
+        </div>
+
+        <button id="play-btn" class="btn primary" type="button">
+          <span>Play</span>
+        </button>
+
+        <div class="meta-row">
+          <div class="meta-item">
+            <span class="meta-label">Best</span>
+            <span id="best-start">0</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Runs</span>
+            <span id="runs-start">0</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Loot</span>
+            <span id="loot-start">0/20</span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button id="rewards-btn" class="btn ghost" type="button">View Rewards</button>
+          <button id="scenery-btn" class="btn ghost" type="button">Scenery</button>
+        </div>
+        <button id="settings-btn" class="btn ghost full-ghost" type="button">Settings</button>
+        <p id="pending-spins-hint" class="hint tiny hidden"></p>
+      </div>
+    </div>
+
+    <!-- Rewards collection -->
+    <div id="rewards-screen" class="overlay hidden">
+      <div class="panel rewards-panel">
+        <h2>Rewards</h2>
+        <p class="hint tiny">Pass 5 pipes → earn a Vegas spin. Collect junk. Live your best goat life.</p>
+        <div class="rewards-summary">
+          <span id="rewards-count">0 / 20</span>
+          <span id="pending-spins-label" class="pending-spins">0 spins ready</span>
+        </div>
+        <button id="spin-from-rewards" class="btn primary hidden" type="button">🎰 Spin Now</button>
+        <div id="rewards-grid" class="rewards-grid"></div>
+        <button id="rewards-close" class="btn ghost" type="button">Back</button>
+      </div>
+    </div>
+
+    <!-- Reward detail -->
+    <div id="reward-detail-screen" class="overlay hidden">
+      <div class="panel">
+        <div id="detail-visual" class="reward-visual large"></div>
+        <h2 id="detail-name">Reward</h2>
+        <p id="detail-desc" class="flavor"></p>
+        <p id="detail-status" class="hint tiny"></p>
+        <button id="detail-close" class="btn primary" type="button">Close</button>
+      </div>
+    </div>
+
+    <!-- Vegas spin machine -->
+    <div id="spin-screen" class="overlay hidden">
+      <div class="panel spin-panel">
+        <h2 class="spin-title">🎰 JACKPOT JUNK</h2>
+        <p class="hint tiny">Good luck, you beautiful dumpster goat</p>
+        <div class="slot-machine">
+          <div class="slot-lights" aria-hidden="true"></div>
+          <div class="slot-window">
+            <div class="slot-pointer"></div>
+            <div id="slot-strip" class="slot-strip"></div>
+          </div>
+          <div class="slot-chrome"></div>
+        </div>
+        <div id="spin-result" class="spin-result hidden">
+          <div id="spin-result-visual" class="reward-visual"></div>
+          <p id="spin-result-name" class="spin-result-name"></p>
+          <p id="spin-result-desc" class="spin-result-desc"></p>
+          <p id="spin-result-tag" class="spin-result-tag"></p>
+        </div>
+        <button id="spin-btn" class="btn primary" type="button">SPIN</button>
+        <button id="spin-done" class="btn ghost hidden" type="button">Nice</button>
+        <p id="spin-remaining" class="hint tiny"></p>
+      </div>
+    </div>
+
+    <!-- Scenery picker -->
+    <div id="scenery-screen" class="overlay hidden">
+      <div class="panel scenery-panel">
+        <h2>Scenery</h2>
+        <p class="hint tiny">Pick an animated world. Saves on this device.</p>
+        <div id="scenery-list" class="scenery-list"></div>
+        <button id="scenery-close" class="btn primary" type="button">Done</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings-screen" class="overlay hidden">
+      <div class="panel">
+        <h2>Settings</h2>
+        <div class="settings-list">
+          <label class="toggle-row">
+            <span>Sound FX</span>
+            <input id="opt-sfx" type="checkbox" checked />
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-row">
+            <span>Music</span>
+            <input id="opt-music" type="checkbox" checked />
+            <span class="switch"></span>
+          </label>
+          <label class="toggle-row">
+            <span>Haptics</span>
+            <input id="opt-haptics" type="checkbox" checked />
+            <span class="switch"></span>
+          </label>
+        </div>
+        <p class="hint tiny">Settings save on this device.</p>
+        <button id="settings-close" class="btn primary" type="button">Done</button>
+      </div>
+    </div>
+
+    <!-- Pause -->
+    <div id="pause-screen" class="overlay hidden">
+      <div class="panel">
+        <h2>Paused</h2>
+        <button id="resume-btn" class="btn primary" type="button">Resume</button>
+        <button id="pause-quit" class="btn ghost" type="button">Quit to Menu</button>
+      </div>
+    </div>
+
+    <!-- Game over -->
+    <div id="gameover-screen" class="overlay hidden">
+      <div class="panel">
+        <h2 id="gameover-title">Game Over</h2>
+        <div class="results">
+          <div class="result-card">
+            <span class="meta-label">Score</span>
+            <span id="final-score" class="result-num">0</span>
+          </div>
+          <div class="result-card">
+            <span class="meta-label">Best</span>
+            <span id="best-score" class="result-num">0</span>
+          </div>
+        </div>
+        <p id="new-record" class="new-record hidden">★ New record!</p>
+        <p id="flavor" class="flavor"></p>
+        <p id="gameover-spins" class="hint tiny hidden"></p>
+        <button id="retry-btn" class="btn primary" type="button">
+          <span>Play Again</span>
+        </button>
+        <button id="claim-spins-btn" class="btn gold hidden" type="button">🎰 Claim Spins</button>
+        <div class="toolbar">
+          <button id="share-btn" class="btn ghost" type="button">Share</button>
+          <button id="menu-btn" class="btn ghost" type="button">Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ready prompt -->
+    <div id="ready-hint" class="hidden">
+      <div class="ready-bubble">Tap to leap!</div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
