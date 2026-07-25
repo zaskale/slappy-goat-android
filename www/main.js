@@ -4974,9 +4974,17 @@ goMenu();
 frame();
 
 // Optional deep-link for docs/automation: ?screen=menu|rewards|trade|scenery|play
+// Add &docs=1 for solid opaque UI (clean screenshots without blur ghosting)
 (() => {
   try {
-    const screen = new URLSearchParams(location.search).get('screen');
+    const params = new URLSearchParams(location.search);
+    const docs = params.get('docs') === '1';
+    const screen = params.get('screen') || 'menu';
+    if (docs) {
+      document.body.classList.add('docs-capture');
+      if (screen === 'play') document.body.classList.add('docs-play');
+      else document.body.classList.add('docs-ui');
+    }
     if (!screen || screen === 'menu') return;
     setTimeout(() => {
       if (screen === 'rewards') openRewardsScreen('menu');
@@ -4989,8 +4997,11 @@ frame();
         show(sceneryScreen);
       } else if (screen === 'play') {
         startGame();
+        // Let a frame or two render; hide tutorial chrome for a clean shot
+        hide(tutorialEl);
+        hide(readyHint);
       }
-    }, 400);
+    }, docs ? 800 : 400);
   } catch {
     /* ignore */
   }

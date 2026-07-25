@@ -429,6 +429,36 @@ body {
   display: none !important;
 }
 
+/* Clean screenshots: solid covers, no blur/fade ghosting in headless Chrome */
+body.docs-capture .overlay {
+  background: #0b1220;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  animation: none;
+}
+body.docs-capture .panel {
+  background: #141c2c;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  animation: none;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+body.docs-capture #vignette,
+body.docs-capture #edge-glow,
+body.docs-capture #flash,
+body.docs-capture #confetti,
+body.docs-capture #toast,
+body.docs-capture #tutorial {
+  display: none !important;
+}
+/* Hide 3D canvas under menu screens so UI is crisp */
+body.docs-capture.docs-ui #game-canvas {
+  visibility: hidden;
+}
+body.docs-capture.docs-play .overlay {
+  display: none !important;
+}
+
 .panel {
   width: min(380px, 100%);
   padding: 32px 24px 24px;
