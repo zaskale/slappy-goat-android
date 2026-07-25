@@ -1,10 +1,19 @@
 # Slappy Goat
 
-**Tap. Leap. Survive.**  
-A portrait Android Flappy-style game starring a 3D goat, junk-loot rewards, and animated scenery.
+**Tap. Leap. Survive. Collect junk. Flex drip.**  
+A portrait Android Flappy-style game starring a 3D goat, a 100-item sidewalk loot catalog, craftable cosmetics & weapons, and flashy animated scenery — including unlockable **Cyberpunk District**.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Slappy Goat title screen" width="320" />
+  <img src="docs/screenshot.png" alt="Slappy Goat title screen" width="280" />
+  <img src="docs/screenshot-play.png" alt="Cyberpunk gameplay" width="280" />
+</p>
+<p align="center">
+  <img src="docs/screenshot-loadout.png" alt="Junk Exchange loadout" width="280" />
+  <img src="docs/screenshot-trade.png" alt="Junk Exchange craft" width="280" />
+</p>
+<p align="center">
+  <img src="docs/screenshot-rewards.png" alt="Rewards collection" width="280" />
+  <img src="docs/screenshot-scenery.png" alt="Scenery picker" width="280" />
 </p>
 
 ---
@@ -12,9 +21,9 @@ A portrait Android Flappy-style game starring a 3D goat, junk-loot rewards, and 
 ## About the game
 
 You are a goat with questionable life choices and excellent vertical commitment.  
-Tap to leap through teal (or neon, or desert…) pipes. Miss, and gravity writes the eulogy.
+Tap to leap through pipes. Miss, and gravity writes the eulogy.
 
-Between flights you collect **absurdist sidewalk loot** from a Vegas-style spin machine — plastic bags, pizza slices, expired milk, and other treasures that definitely belong in a museum.
+Pass **5 pipes** to earn a **Vegas spin** and stockpile absurdist sidewalk loot — plastic bags, radioactive hotdogs, mystery liquids, and ~100 other treasures. Trade that junk at the **Junk Exchange** for hats, tops, pants, shoes, glasses, weapons, and a premium cyberpunk world.
 
 ### Features
 
@@ -22,8 +31,13 @@ Between flights you collect **absurdist sidewalk loot** from a Vegas-style spin 
 |--------|-------------|
 | **3D goat** | Stylized Three.js goat with flapping ears, kicking legs, and bleats |
 | **Portrait play** | Built for phones, locked portrait orientation |
-| **Scenery themes** | Meadow Day, Night Pasture, Golden Hour, Snow Peaks, Desert Dunes, Neon Night |
-| **Vegas rewards** | Every **5 pipes** earns a spin; collect 20 junk items |
+| **100 junk rewards** | Image-based loot catalog; duplicates stack for crafting |
+| **Junk Exchange** | Craft gear from loot combinations |
+| **Loadout** | Equip hat, glasses, top, pants, shoes, and weapon |
+| **Cosmetics** | Santa / baseball / hard hat / cone · VR headset · sweaters & tees · jeans & party shorts · yellow sneakers & work boots |
+| **Weapons** | Pipe Blaster (bolts) or Laser Shooter (glowing beams) — **3 shots per run** |
+| **Scenery themes** | Meadow, Night, Golden Hour, Snow, Desert, Neon Night + unlockable **Cyberpunk District** |
+| **Cyberpunk world** | Neon skyline, flying vehicles, fireworks, rocket launches, multicolor glowing pipes |
 | **Juice** | Particles, haptics, procedural SFX/music, confetti on new bests |
 | **Offline** | Bundled Three.js — no network needed to play |
 
@@ -33,15 +47,23 @@ Between flights you collect **absurdist sidewalk loot** from a Vegas-style spin 
 |--------|--------|
 | Start | **Play** / **Play Again** |
 | Leap | Tap the screen (during a run) |
+| Fire weapon | 💥 button (bottom left or right) · desktop: **F** / **Shift** |
 | Pause | ❚❚ button |
 | Scenery | Home → **Scenery** |
 | Collection | Home → **View Rewards** |
+| Craft / equip | Home → **Junk Exchange** |
 
-### Rewards catalog (20)
+### Junk Exchange (examples)
 
-Plastic Bag · Aluminum Can · Cigarette Butts · Rusty Nails · Grass Clippings · Cardboard Box · Loose Change · Pocket Lint · Drywall Chunks · Rubber Bands · Watermelon · Slice of Pizza · Hot Dog · Cheeseburger · Old Newspaper · Dirty Socks · Oatmeal · Used Gum · Expired Milk · Broken Glass
+| Craft | Needs (examples) |
+|-------|------------------|
+| Party Shorts | Banana + Spaghetti |
+| Work Boots | Cinderblock + Board with Nails |
+| VR Headset | Broken Glass + Broken iPhone |
+| Laser Shooter | Nail Gun + Broken iPhone + Leaky Battery |
+| Cyberpunk District | Virus + COVID + phone + cables + USB |
 
-Owned items show in full color; locked ones are greyed and blurred until you win them.
+Owned loot shows in color; locked rewards stay greyed until you spin them. Crafting **consumes** stacked junk.
 
 ---
 
@@ -71,6 +93,8 @@ python3 -m http.server 8765
 ```
 
 Open [http://localhost:8765](http://localhost:8765) (use a tall window / phone mode).
+
+Optional screen deep-links for testing: `?screen=rewards`, `trade`, `loadout`, `scenery`, `play`.
 
 ---
 
@@ -114,10 +138,15 @@ adb shell am start -n com.slappybird.goat/.MainActivity
 
 ```text
 slappy-goat-android/
-├── www/                 # Game (HTML / CSS / Three.js)
-├── android/             # Capacitor Android shell
-├── dist/SlappyGoat.apk  # Installable build
-├── docs/screenshot.png  # Title screen capture
+├── www/                    # Game (HTML / CSS / Three.js)
+│   └── assets/
+│       ├── rewards/        # 100 loot images
+│       └── background/     # Rocket art for Cyberpunk
+├── android/                # Capacitor Android shell
+├── dist/SlappyGoat.apk     # Installable build
+├── docs/                   # Screenshots
+├── Game Assets/            # Source loot art
+├── Background Assets/      # Source background art
 ├── capacitor.config.json
 └── package.json
 ```

@@ -22,7 +22,7 @@
     <div id="confetti" class="hidden" aria-hidden="true"></div>
     <div id="toast" class="hidden"></div>
 
-    <!-- In-game HUD -->
+    <!-- In-game HUD (full-screen overlay for absolute controls) -->
     <div id="hud" class="hidden">
       <div id="score-pill">
         <span id="score-value">0</span>
@@ -31,7 +31,11 @@
         <span class="spins-label">Spins</span>
         <span id="spins-value">0</span>
       </div>
-      <button id="pause-btn" class="icon-btn" type="button" aria-label="Pause">❚❚</button>
+      <button id="pause-btn" class="icon-btn pause-btn" type="button" aria-label="Pause">❚❚</button>
+      <button id="fire-btn" class="fire-btn fire-right hidden" type="button" aria-label="Fire weapon">
+        <span class="fire-icon">💥</span>
+        <span id="fire-count">3</span>
+      </button>
       <div id="float-score" class="hidden">+1</div>
     </div>
 
@@ -65,7 +69,7 @@
           </div>
           <div class="meta-item">
             <span class="meta-label">Loot</span>
-            <span id="loot-start">0/20</span>
+            <span id="loot-start">0/100</span>
           </div>
         </div>
 
@@ -73,8 +77,24 @@
           <button id="rewards-btn" class="btn ghost" type="button">View Rewards</button>
           <button id="scenery-btn" class="btn ghost" type="button">Scenery</button>
         </div>
+        <button id="trade-btn" class="btn gold full-ghost" type="button">♻️ Junk Exchange</button>
         <button id="settings-btn" class="btn ghost full-ghost" type="button">Settings</button>
         <p id="pending-spins-hint" class="hint tiny hidden"></p>
+      </div>
+    </div>
+
+    <!-- Junk Exchange: craft gear / loadout -->
+    <div id="trade-screen" class="overlay hidden">
+      <div class="panel trade-panel">
+        <h2>Junk Exchange</h2>
+        <p class="hint tiny">Trade loot for drip, flashy scenery, and limited-use weapons.</p>
+        <div class="trade-tabs" role="tablist">
+          <button id="trade-tab-shop" class="trade-tab active" type="button">Craft</button>
+          <button id="trade-tab-loadout" class="trade-tab" type="button">Loadout</button>
+        </div>
+        <div id="trade-shop-list" class="trade-list scrollable"></div>
+        <div id="trade-loadout" class="trade-list scrollable hidden"></div>
+        <button id="trade-close" class="btn primary" type="button">Back</button>
       </div>
     </div>
 
@@ -84,7 +104,7 @@
         <h2>Rewards</h2>
         <p class="hint tiny">Pass 5 pipes → earn a Vegas spin. Collect junk. Live your best goat life.</p>
         <div class="rewards-summary">
-          <span id="rewards-count">0 / 20</span>
+          <span id="rewards-count">0 / 100</span>
           <span id="pending-spins-label" class="pending-spins">0 spins ready</span>
         </div>
         <button id="spin-from-rewards" class="btn primary hidden" type="button">🎰 Spin Now</button>
@@ -159,6 +179,13 @@
             <input id="opt-haptics" type="checkbox" checked />
             <span class="switch"></span>
           </label>
+          <div class="toggle-row" style="flex-direction: column; align-items: stretch; gap: 10px; cursor: default;">
+            <span>Shoot button side</span>
+            <div class="side-picker" role="group" aria-label="Shoot button side">
+              <button id="opt-fire-left" class="side-opt" type="button">◀ Left</button>
+              <button id="opt-fire-right" class="side-opt selected" type="button">Right ▶</button>
+            </div>
+          </div>
         </div>
         <p class="hint tiny">Settings save on this device.</p>
         <button id="settings-close" class="btn primary" type="button">Done</button>

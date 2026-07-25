@@ -32,7 +32,11 @@ const KEYS = {
   settings: 'slappy-goat-settings',
   tutored: 'slappy-goat-tutored',
   owned: 'slappy-goat-owned-rewards',
+  inventory: 'slappy-goat-inventory',
   spins: 'slappy-goat-pending-spins',
+  unlocked: 'slappy-goat-unlocked-gear',
+  equipped: 'slappy-goat-equipped',
+  unlockedThemes: 'slappy-goat-unlocked-themes',
 };
 
 /** Animated scenery themes (picked from menu) */
@@ -199,51 +203,410 @@ const THEMES = {
     ambient: 0x8060c0,
     pipe: { h: 0.85, s: 0.9, l: 0.55, emissive: 0x4a0080, cap: 0xd060ff, rim: 0x60ffe0 },
   },
+  cyberpunk: {
+    id: 'cyberpunk',
+    name: 'Cyberpunk District',
+    emoji: '🌆',
+    blurb: 'Holo rain · neon grid · max flash',
+    requiresUnlock: true,
+    skyTop: '#050018',
+    skyMid: '#1a0548',
+    skyBot: '#ff2d95',
+    skyDrift: true,
+    ground: 0x0a0618,
+    groundStrip: 0x12082a,
+    groundEdge: 0xff2d95,
+    hill: [0x0c0830, 0x1a0a40, 0x08061c, 0x221050],
+    grass: 0x00f0ff,
+    treeTrunk: 0x1a1030,
+    treeLeaf: [0xff2d95, 0x00f0ff, 0xb400ff],
+    sunColor: 0x00f0ff,
+    sunGlow: 0xff2d95,
+    sunVisible: false,
+    moonVisible: true,
+    starsOpacity: 0.95,
+    fireflies: true,
+    balloons: true,
+    birds: false,
+    ambient: 0xff60c0,
+    // Neon multi-hue pipes — each pair picks from neonHues
+    pipe: {
+      h: 0.92,
+      s: 1.0,
+      l: 0.58,
+      emissive: 0xff0080,
+      cap: 0x00f0ff,
+      rim: 0xffe066,
+      neon: true,
+      neonHues: [0.92, 0.55, 0.78, 0.12, 0.0, 0.45], // magenta, cyan, purple, yellow, red, green
+      emissiveIntensity: 0.95,
+    },
+  },
 };
 
 /** Collectible junk rewards — one Vegas spin every 5 pipes */
 const REWARDS = [
-  { id: 'plastic-bag', name: 'Plastic Bag', emoji: '🛍️', colorA: '#7ec8e3', colorB: '#2a5a6e',
-    desc: 'Crispy, crinkly, and aerodynamically useless. Peak sidewalk fashion.' },
-  { id: 'aluminum-can', name: 'Aluminum Can', emoji: '🥫', colorA: '#c0c8d0', colorB: '#4a5560',
+  { id: 'aluminum-can', name: 'Aluminum Can', img: 'assets/rewards/Aluminum Can.png', colorA: '#7ec8e3', colorB: '#2a5a6e',
     desc: 'Still sticky. Still redeemable for 5¢ if you believe hard enough.' },
-  { id: 'cigarette-butts', name: 'Cigarette Butts', emoji: '🚬', colorA: '#d4a574', colorB: '#4a3020',
-    desc: 'A bouquet of bad decisions. Do not light. Do not sniff. Do not.' },
-  { id: 'rusty-nails', name: 'Rusty Nails', emoji: '🔩', colorA: '#b07040', colorB: '#3a2010',
-    desc: 'Tetanus starter pack. Handles like a villain’s confetti.' },
-  { id: 'grass-clippings', name: 'Grass Clippings', emoji: '🌱', colorA: '#6bcf6b', colorB: '#2a5a20',
-    desc: 'Fresh-cut lawn confetti. Smells like weekends and allergies.' },
-  { id: 'cardboard-box', name: 'Cardboard Box', emoji: '📦', colorA: '#d4b896', colorB: '#6a4a28',
-    desc: 'Former home of a microwave. Current fortress for a goat of culture.' },
-  { id: 'loose-change', name: 'Loose Change', emoji: '🪙', colorA: '#ffd166', colorB: '#8a6020',
-    desc: 'Mostly pennies. One mysterious foreign coin. Instant wealth energy.' },
-  { id: 'pocket-lint', name: 'Pocket Lint', emoji: '🧶', colorA: '#c8b8a8', colorB: '#5a4a40',
-    desc: 'The softest treasure. Possibly used to be a tissue. Possibly a moth.' },
-  { id: 'drywall-chunks', name: 'Drywall Chunks', emoji: '🧱', colorA: '#e8e0d0', colorB: '#6a6558',
-    desc: 'Crunchy renovation leftovers. Interior design, but violent.' },
-  { id: 'rubber-bands', name: 'Rubber Bands', emoji: '⭕', colorA: '#f0a0c0', colorB: '#603040',
-    desc: 'A tangled galaxy of stretchy chaos. Office supplies gone feral.' },
-  { id: 'watermelon', name: 'Watermelon', emoji: '🍉', colorA: '#5ad46a', colorB: '#c04050',
-    desc: 'Whole. Heavy. Hydrating. Why is it here? Don’t ask. Just roll with it.' },
-  { id: 'pizza-slice', name: 'Slice of Pizza', emoji: '🍕', colorA: '#ffb060', colorB: '#8a3020',
-    desc: 'Room temperature. Cheese still fighting gravity. Absolute legend.' },
-  { id: 'hot-dog', name: 'Hot Dog', emoji: '🌭', colorA: '#f0a070', colorB: '#6a3020',
-    desc: 'Mystery meat in a soft hug. Street food royalty for goats.' },
-  { id: 'cheeseburger', name: 'Cheeseburger', emoji: '🍔', colorA: '#e8c060', colorB: '#5a3018',
-    desc: 'Stacked. Greasy. Emotionally supportive. One bite = +2 courage.' },
-  { id: 'old-newspaper', name: 'Old Newspaper', emoji: '📰', colorA: '#d8d0c0', colorB: '#4a4840',
-    desc: 'Yesterday’s news, today’s blanket. Crossword half-solved in crayon.' },
-  { id: 'dirty-socks', name: 'Dirty Socks', emoji: '🧦', colorA: '#8a9ab0', colorB: '#2a3040',
-    desc: 'A matched pair somehow. Biological warfare in fabric form.' },
-  { id: 'oatmeal', name: 'Oatmeal', emoji: '🥣', colorA: '#e8d8b0', colorB: '#6a5a38',
-    desc: 'Lukewarm. Lumpy. Nutritionally confusing. Breakfast of champions?' },
-  { id: 'used-gum', name: 'Used Gum', emoji: '🫧', colorA: '#f080c0', colorB: '#602040',
-    desc: 'Stuck to destiny. Chewy history. Do not put it back in your mouth.' },
-  { id: 'expired-milk', name: 'Expired Milk', emoji: '🥛', colorA: '#f0f0e8', colorB: '#6a6a50',
-    desc: 'Past its prime by several philosophical eras. Solidly liquid.' },
-  { id: 'broken-glass', name: 'Broken Glass', emoji: '🪞', colorA: '#a8d8e8', colorB: '#305060',
+  { id: 'apple-core', name: 'Apple Core', img: 'assets/rewards/Apple Core.png', colorA: '#c0c8d0', colorB: '#4a5560',
+    desc: 'Someone already ate the good part. You got the philosophy.' },
+  { id: 'bad-egg', name: 'Bad Egg', img: 'assets/rewards/Bad Egg.png', colorA: '#d4a574', colorB: '#4a3020',
+    desc: 'Looks fine. Smells like a war crime. Do not scramble.' },
+  { id: 'bag-of-garbage', name: 'Bag of Garbage', img: 'assets/rewards/Bag of Garbage.png', colorA: '#b07040', colorB: '#3a2010',
+    desc: 'Spelling optional. Smell mandatory. Peak goat couture.' },
+  { id: 'banana', name: 'Banana', img: 'assets/rewards/Banana.png', colorA: '#6bcf6b', colorB: '#2a5a20',
+    desc: 'Potassium with commitment issues. Slippery when moral.' },
+  { id: 'bee', name: 'Bee', img: 'assets/rewards/Bee.png', colorA: '#d4b896', colorB: '#6a4a28',
+    desc: 'Busy, buzzed, and slightly offended you collected it.' },
+  { id: 'board-with-nails', name: 'Board with Nails', img: 'assets/rewards/Board with Nails.png', colorA: '#ffd166', colorB: '#8a6020',
+    desc: 'Home renovation, but personal. Tetanus: included free.' },
+  { id: 'box-of-lo-mein', name: 'Box of Lo Mein', img: 'assets/rewards/Box of Lo Mein.png', colorA: '#c8b8a8', colorB: '#5a4a40',
+    desc: 'Cold noodles, warm regret. Still somehow delicious.' },
+  { id: 'broken-comb', name: 'Broken Comb', img: 'assets/rewards/Broken Comb.png', colorA: '#e8e0d0', colorB: '#6a6558',
+    desc: 'Hair? Never heard of her. Style? Pure chaos.' },
+  { id: 'broken-egg', name: 'Broken Egg', img: 'assets/rewards/Broken Egg.png', colorA: '#f0a0c0', colorB: '#603040',
+    desc: 'Not sunny-side. Not any side. Just sadness with shell.' },
+  { id: 'broken-glass', name: 'Broken Glass', img: 'assets/rewards/Broken Glass.png', colorA: '#5ad46a', colorB: '#c04050',
     desc: 'Sparkly danger confetti. Handle with hooves of caution.' },
+  { id: 'broken-iphone', name: 'Broken iPhone', img: 'assets/rewards/Broken iPhone.png', colorA: '#ffb060', colorB: '#8a3020',
+    desc: 'Still on 3% battery somehow. Notifications from 2019.' },
+  { id: 'broken-pipe', name: 'Broken Pipe', img: 'assets/rewards/Broken Pipe.png', colorA: '#f0a070', colorB: '#6a3020',
+    desc: 'Plumbing problems you can hold. Metaphorical and literal.' },
+  { id: 'burnt-toast', name: 'Burnt Toast', img: 'assets/rewards/Burnt Toast.png', colorA: '#e8c060', colorB: '#5a3018',
+    desc: 'Crispy tragedy. Charcoal notes with a hint of smoke alarm.' },
+  { id: 'burrito', name: 'Burrito', img: 'assets/rewards/Burrito.png', colorA: '#d8d0c0', colorB: '#4a4840',
+    desc: 'A soft cylinder of secrets. Possibly beans. Possibly destiny.' },
+  { id: 'butterfly', name: 'Butterfly', img: 'assets/rewards/Butterfly.png', colorA: '#8a9ab0', colorB: '#2a3040',
+    desc: 'Fluttered into your collection. Instant +10 vibe.' },
+  { id: 'car-tire', name: 'Car Tire', img: 'assets/rewards/Car Tire.png', colorA: '#e8d8b0', colorB: '#6a5a38',
+    desc: 'Round, heavy, and deeply uninterested in rolling for free.' },
+  { id: 'caterpillar', name: 'Caterpillar', img: 'assets/rewards/Caterpillar.png', colorA: '#f080c0', colorB: '#602040',
+    desc: 'Future butterfly energy. Present: tiny fluff noodle.' },
+  { id: 'chair-of-regret', name: 'Chair of Regret', img: 'assets/rewards/Chair of Regret.png', colorA: '#f0f0e8', colorB: '#6a6a50',
+    desc: 'Sit and reflect on every life choice. Or just trip over it.' },
+  { id: 'chinese-food', name: 'Chinese Food', img: 'assets/rewards/Chinese Food.png', colorA: '#a8d8e8', colorB: '#305060',
+    desc: 'Fortune cookie said \'you will collect trash.\' Accurate.' },
+  { id: 'cinderblock', name: 'Cinderblock', img: 'assets/rewards/Cinderblock.png', colorA: '#7ec8e3', colorB: '#2a5a6e',
+    desc: 'Heavy. Rectangular. Emotionally unavailable. Perfect.' },
+  { id: 'coconut', name: 'Coconut', img: 'assets/rewards/Coconut.png', colorA: '#c0c8d0', colorB: '#4a5560',
+    desc: 'Hard exterior, soft drama. Requires commitment (and a tool).' },
+  { id: 'covid', name: 'COVID', img: 'assets/rewards/COVID.png', colorA: '#d4a574', colorB: '#4a3020',
+    desc: 'Please don\'t lick this one. Collectible plague iconography.' },
+  { id: 'crumpled-cup', name: 'Crumpled Cup', img: 'assets/rewards/Crumpled Cup.png', colorA: '#b07040', colorB: '#3a2010',
+    desc: 'Once held coffee. Now holds disappointment and ants.' },
+  { id: 'crumpled-napkin', name: 'Crumpled Napkin', img: 'assets/rewards/Crumpled Napkin.png', colorA: '#6bcf6b', colorB: '#2a5a20',
+    desc: 'Wiped something. Nobody wants to know what.' },
+  { id: 'crystals', name: 'Crystals', img: 'assets/rewards/Crystals.png', colorA: '#d4b896', colorB: '#6a4a28',
+    desc: 'Sparkly rocks that promise healing and deliver dust.' },
+  { id: 'dc-motor', name: 'DC Motor', img: 'assets/rewards/DC Motor.png', colorA: '#ffd166', colorB: '#8a6020',
+    desc: 'Spins when motivated. Currently unmotivated.' },
+  { id: 'diaper', name: 'Diaper', img: 'assets/rewards/Diaper.png', colorA: '#c8b8a8', colorB: '#5a4a40',
+    desc: 'Used? Unknown. Sacred? Absolutely. Keep your distance.' },
+  { id: 'donut', name: 'Donut', img: 'assets/rewards/Donut.png', colorA: '#e8e0d0', colorB: '#6a6558',
+    desc: 'Hole included at no extra charge. Glaze fighting gravity.' },
+  { id: 'duct-tape', name: 'Duct Tape', img: 'assets/rewards/Duct Tape.png', colorA: '#f0a0c0', colorB: '#603040',
+    desc: 'Fixes everything except the reason you needed duct tape.' },
+  { id: 'empty-jug', name: 'Empty Jug', img: 'assets/rewards/Empty Jug.png', colorA: '#5ad46a', colorB: '#c04050',
+    desc: 'Full of emptiness. Hydration for ghosts.' },
+  { id: 'empty-old-box', name: 'Empty Old Box', img: 'assets/rewards/Empty Old Box.png', colorA: '#ffb060', colorB: '#8a3020',
+    desc: 'Former mystery. Current empty. Still collecting dust like a pro.' },
+  { id: 'eww-cream', name: 'Eww Cream', img: 'assets/rewards/Eww Cream.png', colorA: '#f0a070', colorB: '#6a3020',
+    desc: 'Lotion for people who hate joy. Texture: wrong.' },
+  { id: 'expired-milk', name: 'Expired Milk', img: 'assets/rewards/Expired Milk.png', colorA: '#e8c060', colorB: '#5a3018',
+    desc: 'Past its prime by several philosophical eras. Solidly liquid.' },
+  { id: 'fancy-fries', name: 'Fancy Fries', img: 'assets/rewards/Fancy Fries.png', colorA: '#d8d0c0', colorB: '#4a4840',
+    desc: 'Elevated potato. Seasoned like it has a trust fund.' },
+  { id: 'flies-in-a-jar', name: 'Flies in a Jar', img: 'assets/rewards/Flies in a Jar.png', colorA: '#8a9ab0', colorB: '#2a3040',
+    desc: 'A tiny ecosystem of bad vibes. Do not open. Do open. Chaos either way.' },
+  { id: 'fries', name: 'Fries', img: 'assets/rewards/Fries.png', colorA: '#e8d8b0', colorB: '#6a5a38',
+    desc: 'Classic. Greasy. Best eaten three hours ago.' },
+  { id: 'ginger-root', name: 'Ginger Root', img: 'assets/rewards/Ginger Root.png', colorA: '#f080c0', colorB: '#602040',
+    desc: 'Spicy root of courage. Looks like a goblin hand. Respect it.' },
+  { id: 'hammer', name: 'Hammer', img: 'assets/rewards/Hammer.png', colorA: '#f0f0e8', colorB: '#6a6a50',
+    desc: 'Problem solver. Also problem creator. Depends on the swing.' },
+  { id: 'handsaw', name: 'Handsaw', img: 'assets/rewards/Handsaw.png', colorA: '#a8d8e8', colorB: '#305060',
+    desc: 'Cuts wood, tension, and occasionally dignity.' },
+  { id: 'hardhat', name: 'Hardhat', img: 'assets/rewards/Hardhat.png', colorA: '#7ec8e3', colorB: '#2a5a6e',
+    desc: 'Safety first. Style second. Goat third.' },
+  { id: 'hot-sauce', name: 'Hot Sauce', img: 'assets/rewards/Hot Sauce.png', colorA: '#c0c8d0', colorB: '#4a5560',
+    desc: 'Liquid regret with excellent marketing. Burns twice.' },
+  { id: 'house-fly', name: 'House Fly', img: 'assets/rewards/House Fly.png', colorA: '#d4a574', colorB: '#4a3020',
+    desc: 'Uninvited guest. Excellent at existing where food is.' },
+  { id: 'jar-of-gummy-worms', name: 'Jar of Gummy Worms', img: 'assets/rewards/Jar of Gummy Worms.png', colorA: '#b07040', colorB: '#3a2010',
+    desc: 'Candy that stares back. Chewy. Judgy. Immortal.' },
+  { id: 'jello-mold', name: 'Jello Mold', img: 'assets/rewards/Jello Mold.png', colorA: '#6bcf6b', colorB: '#2a5a20',
+    desc: 'Wiggles with ancient knowledge. Possibly fruit. Possibly not.' },
+  { id: 'junk-pile', name: 'Junk Pile', img: 'assets/rewards/Junk Pile.png', colorA: '#d4b896', colorB: '#6a4a28',
+    desc: 'The original starter pack. All of life\'s clutter in one heap.' },
+  { id: 'just-hangers', name: 'Just Hangers', img: 'assets/rewards/Just Hangers.png', colorA: '#ffd166', colorB: '#8a6020',
+    desc: 'No clothes. Only hangers. The void has wireframes.' },
+  { id: 'ketchup', name: 'Ketchup', img: 'assets/rewards/Ketchup.png', colorA: '#c8b8a8', colorB: '#5a4a40',
+    desc: 'Condiment of champions. Also a mild biohazard if opened in 2009.' },
+  { id: 'ladybug', name: 'Ladybug', img: 'assets/rewards/Ladybug.png', colorA: '#e8e0d0', colorB: '#6a6558',
+    desc: 'Spotted luck. Tiny friend. Do not name it Gerald (too late).' },
+  { id: 'leaky-battery', name: 'Leaky Battery', img: 'assets/rewards/Leaky Battery.png', colorA: '#f0a0c0', colorB: '#603040',
+    desc: 'Acidic personality. Powered something once. Now powers dread.' },
+  { id: 'lid-with-cheese-sauce', name: 'Lid with Cheese Sauce', img: 'assets/rewards/Lid with Cheese Sauce.png', colorA: '#5ad46a', colorB: '#c04050',
+    desc: 'The lid survived. The cheese has other plans.' },
+  { id: 'meteor', name: 'Meteor', img: 'assets/rewards/Meteor.png', colorA: '#ffb060', colorB: '#8a3020',
+    desc: 'Space rock that chose violence (and your inventory).' },
+  { id: 'mexican-street-corn', name: 'Mexican Street Corn', img: 'assets/rewards/Mexican Street Corn.png', colorA: '#f0a070', colorB: '#6a3020',
+    desc: 'Elote energy. Mayo, cheese, chili, and zero regrets.' },
+  { id: 'moldy-cheese', name: 'Moldy Cheese', img: 'assets/rewards/Moldy Cheese.png', colorA: '#e8c060', colorB: '#5a3018',
+    desc: 'Aged beyond age. Blue? Green? Sentient? Yes.' },
+  { id: 'moldy-iced-coffee', name: 'Moldy Iced Coffee', img: 'assets/rewards/Moldy Iced Coffee.png', colorA: '#d8d0c0', colorB: '#4a4840',
+    desc: 'Cold brew of the damned. Ice long gone. Courage required.' },
+  { id: 'mystery-can', name: 'Mystery Can', img: 'assets/rewards/Mystery Can.png', colorA: '#8a9ab0', colorB: '#2a3040',
+    desc: 'Label missing. Contents negotiating. Best not to shake.' },
+  { id: 'mystery-jar', name: 'Mystery Jar', img: 'assets/rewards/Mystery Jar.png', colorA: '#e8d8b0', colorB: '#6a5a38',
+    desc: 'What\'s inside? Science may never know. You might.' },
+  { id: 'mystery-liquid', name: 'Mystery Liquid', img: 'assets/rewards/Mystery Liquid.png', colorA: '#f080c0', colorB: '#602040',
+    desc: 'Viscosity: suspicious. Color: accusations. Sip? Absolutely not.' },
+  { id: 'nail-gun', name: 'Nail Gun', img: 'assets/rewards/Nail Gun.png', colorA: '#f0f0e8', colorB: '#6a6a50',
+    desc: 'Fastens things with enthusiasm. Point away from face. And goats.' },
+  { id: 'old-brick', name: 'Old Brick', img: 'assets/rewards/Old Brick.png', colorA: '#a8d8e8', colorB: '#305060',
+    desc: 'Building block of civilization. Also of goat-related accidents.' },
+  { id: 'old-newspaper', name: 'Old Newspaper', img: 'assets/rewards/Old Newspaper.png', colorA: '#7ec8e3', colorB: '#2a5a6e',
+    desc: 'Yesterday\'s news, today\'s blanket. Crossword half-solved in crayon.' },
+  { id: 'old-pizza', name: 'Old Pizza', img: 'assets/rewards/Old Pizza.png', colorA: '#c0c8d0', colorB: '#4a5560',
+    desc: 'Cheese has become geology. Still pizza in its heart.' },
+  { id: 'old-sock', name: 'Old Sock', img: 'assets/rewards/Old Sock.png', colorA: '#d4a574', colorB: '#4a3020',
+    desc: 'Lone wolf of the laundry. Biological warfare in fabric form.' },
+  { id: 'pile-of-concrete', name: 'Pile of Concrete', img: 'assets/rewards/Pile of Concrete.png', colorA: '#b07040', colorB: '#3a2010',
+    desc: 'Dreams of being a sidewalk. Currently unemployed rubble.' },
+  { id: 'pile-of-fur', name: 'Pile of Fur', img: 'assets/rewards/Pile of Fur.png', colorA: '#6bcf6b', colorB: '#2a5a20',
+    desc: 'Whose fur? Unknown. Soft? Debatable. Collectible? Yes.' },
+  { id: 'pile-of-rocks', name: 'Pile of Rocks', img: 'assets/rewards/Pile of Rocks.png', colorA: '#d4b896', colorB: '#6a4a28',
+    desc: 'Geology starter kit. Skip them, stack them, revere them.' },
+  { id: 'pinecone', name: 'Pinecone', img: 'assets/rewards/Pinecone.png', colorA: '#ffd166', colorB: '#8a6020',
+    desc: 'Nature\'s grenade. Spiky. Seasonal. Excellent for tossing.' },
+  { id: 'plastic-bag', name: 'Plastic Bag', img: 'assets/rewards/Plastic Bag.png', colorA: '#c8b8a8', colorB: '#5a4a40',
+    desc: 'Crispy, crinkly, and aerodynamically useless. Peak sidewalk fashion.' },
+  { id: 'poo', name: 'Poo', img: 'assets/rewards/Poo.png', colorA: '#e8e0d0', colorB: '#6a6558',
+    desc: 'Nature\'s punctuation mark. Do not step. Do not collect. You collected.' },
+  { id: 'potato-wedges', name: 'Potato Wedges', img: 'assets/rewards/Potato Wedges.png', colorA: '#f0a0c0', colorB: '#603040',
+    desc: 'Chunkier fries. Bolder energy. Same destiny: cold and legendary.' },
+  { id: 'power-strip', name: 'Power Strip', img: 'assets/rewards/Power Strip.png', colorA: '#5ad46a', colorB: '#c04050',
+    desc: 'More outlets than willpower. Surge protection optional.' },
+  { id: 'praying-mantis', name: 'Praying Mantis', img: 'assets/rewards/Praying Mantis.png', colorA: '#ffb060', colorB: '#8a3020',
+    desc: 'Patient assassin of the garden. Staring is mutual.' },
+  { id: 'radioactive-hotdog', name: 'Radioactive Hotdog', img: 'assets/rewards/Radioactive Hotdog.png', colorA: '#f0a070', colorB: '#6a3020',
+    desc: 'Glows with confidence and mild concern. Street food+, scientifically.' },
+  { id: 'rubber-chicken', name: 'Rubber Chicken', img: 'assets/rewards/Rubber Chicken.png', colorA: '#e8c060', colorB: '#5a3018',
+    desc: 'Comedy prop. Squeaks of judgment. Instant slapstick.' },
+  { id: 'rubber-ducky', name: 'Rubber Ducky', img: 'assets/rewards/Rubber Ducky.png', colorA: '#d8d0c0', colorB: '#4a4840',
+    desc: 'Squeaks of judgment. Bath time optional. Emotional support: max.' },
+  { id: 'rusty-can', name: 'Rusty Can', img: 'assets/rewards/Rusty Can.png', colorA: '#8a9ab0', colorB: '#2a3040',
+    desc: 'Oxidized hopes and beans. Opens with a prayer and a tetanus shot.' },
+  { id: 'seashell', name: 'Seashell', img: 'assets/rewards/Seashell.png', colorA: '#e8d8b0', colorB: '#6a5a38',
+    desc: 'Ocean mail. Whisper it secrets. It already knows.' },
+  { id: 'shattered-lightbulb', name: 'Shattered Lightbulb', img: 'assets/rewards/Shattered Lightbulb.png', colorA: '#f080c0', colorB: '#602040',
+    desc: 'Idea: failed. Sparkle: achieved. Handle carefully.' },
+  { id: 'shrooms-on-a-log', name: 'Shrooms on a Log', img: 'assets/rewards/Shrooms on a Log.png', colorA: '#f0f0e8', colorB: '#6a6a50',
+    desc: 'Forest snack aesthetic. For looking, not licking.' },
+  { id: 'slushee', name: 'Slushee', img: 'assets/rewards/Slushee.png', colorA: '#a8d8e8', colorB: '#305060',
+    desc: 'Frozen sugar chaos. Brain freeze sold separately.' },
+  { id: 'soup', name: 'Soup?', img: 'assets/rewards/Soup.png', colorA: '#7ec8e3', colorB: '#2a5a6e',
+    desc: 'Is it soup? Was it soup? Will it be soup again? Unclear.' },
+  { id: 'spaghetti', name: 'Spaghetti', img: 'assets/rewards/Spaghetti.png', colorA: '#c0c8d0', colorB: '#4a5560',
+    desc: 'Noodles unbound. Sauce optional. Gravity fully involved.' },
+  { id: 'sponge', name: 'Sponge', img: 'assets/rewards/Sponge.png', colorA: '#d4a574', colorB: '#4a3020',
+    desc: 'Absorbs everything: water, vibes, secrets of the sink.' },
+  { id: 'sub-sandwich', name: 'Sub Sandwich', img: 'assets/rewards/Sub Sandwich.png', colorA: '#b07040', colorB: '#3a2010',
+    desc: 'Footlong ambition. Condiment diplomacy required.' },
+  { id: 'suspicious-pizza-slice', name: 'Suspicious Pizza Slice', img: 'assets/rewards/Suspicious Pizza Slice.png', colorA: '#6bcf6b', colorB: '#2a5a20',
+    desc: 'Toppings that raise questions. Cheese that answers none.' },
+  { id: 'tangled-cables', name: 'Tangled Cables', img: 'assets/rewards/Tangled Cables.png', colorA: '#d4b896', colorB: '#6a4a28',
+    desc: 'The final boss of drawers. USB? HDMI? Destiny?' },
+  { id: 'tape-measure', name: 'Tape Measure', img: 'assets/rewards/Tape Measure.png', colorA: '#ffd166', colorB: '#8a6020',
+    desc: 'Knows your length. Judges your DIY skills silently.' },
+  { id: 'tfork', name: 'Tfork', img: 'assets/rewards/Tfork.png', colorA: '#c8b8a8', colorB: '#5a4a40',
+    desc: 'Neither spoon nor fork. Pure chaos cutlery.' },
+  { id: 'that-sticky-plant', name: 'That Sticky Plant', img: 'assets/rewards/That Sticky Plant.png', colorA: '#e8e0d0', colorB: '#6a6558',
+    desc: 'It wants to be your friend. Permanently. On your fur.' },
+  { id: 'toilet', name: 'Toilet', img: 'assets/rewards/Toilet.png', colorA: '#f0a0c0', colorB: '#603040',
+    desc: 'The full experience. Heavy. Porcelain. Conversation starter.' },
+  { id: 'toilet-paper', name: 'Toilet Paper', img: 'assets/rewards/Toilet Paper.png', colorA: '#5ad46a', colorB: '#c04050',
+    desc: 'Precious in crisis. Mildly used? Don\'t think about it.' },
+  { id: 'toilet-seat', name: 'Toilet Seat', img: 'assets/rewards/Toilet Seat.png', colorA: '#ffb060', colorB: '#8a3020',
+    desc: 'Throne fragment. Surprisingly collectible. Deeply cursed.' },
+  { id: 'traffic-cone', name: 'Traffic Cone', img: 'assets/rewards/Traffic Cone.png', colorA: '#f0a070', colorB: '#6a3020',
+    desc: 'Orange authority. Directs traffic and life decisions poorly.' },
+  { id: 'umbrella', name: 'Umbrella', img: 'assets/rewards/Umbrella.png', colorA: '#e8c060', colorB: '#5a3018',
+    desc: 'Broken spokes optional. Rain protection: spiritual only.' },
+  { id: 'usb-drive', name: 'USB Drive', img: 'assets/rewards/USB Drive.png', colorA: '#d8d0c0', colorB: '#4a4840',
+    desc: '16GB of mystery files and one virus named \'final_final2\'.' },
+  { id: 'used-candle', name: 'Used Candle', img: 'assets/rewards/Used Candle.png', colorA: '#8a9ab0', colorB: '#2a3040',
+    desc: 'Burned out but still romantic. Wax memories included.' },
+  { id: 'vintage-keyboard', name: 'Vintage Keyboard', img: 'assets/rewards/Vintage Keyboard.png', colorA: '#e8d8b0', colorB: '#6a5a38',
+    desc: 'Clicky history. Missing keys. Full of secrets and crumbs.' },
+  { id: 'virus', name: 'Virus', img: 'assets/rewards/Virus.png', colorA: '#f080c0', colorB: '#602040',
+    desc: 'Digital menace, physical sticker energy. Wash your hooves.' },
+  { id: 'waffle', name: 'Waffle', img: 'assets/rewards/Waffle.png', colorA: '#f0f0e8', colorB: '#6a6a50',
+    desc: 'Grid of joy. Syrup optional. Breakfast anytime.' },
+  { id: 'wasp', name: 'Wasp', img: 'assets/rewards/Wasp.png', colorA: '#a8d8e8', colorB: '#305060',
+    desc: 'Bee\'s angrier cousin. Collect at your own risk (already collected).' },
 ];
+
+
+// ─── Junk Exchange: craft gear / themes / weapons from loot ───────────────────
+const TRADES = [
+  {
+    id: 'hat-hardhat',
+    name: 'Hard Hat',
+    type: 'hat',
+    emoji: '⛑️',
+    blurb: 'OSHA-approved goat protection. Fashion optional.',
+    cost: [{ id: 'hardhat', n: 1 }],
+  },
+  {
+    id: 'hat-cone',
+    name: 'Traffic Cone Crown',
+    type: 'hat',
+    emoji: '🚧',
+    blurb: 'You are the roadwork now.',
+    cost: [{ id: 'traffic-cone', n: 1 }, { id: 'duct-tape', n: 1 }],
+  },
+  {
+    id: 'hat-baseball',
+    name: 'Baseball Cap',
+    type: 'hat',
+    emoji: '🧢',
+    blurb: 'Peak goat athletics. Brim tilted for style.',
+    cost: [{ id: 'empty-old-box', n: 1 }, { id: 'duct-tape', n: 1 }],
+  },
+  {
+    id: 'hat-santa',
+    name: 'Santa Hat',
+    type: 'hat',
+    emoji: '🎅',
+    blurb: 'Ho-ho-hooves. Festive chaos included.',
+    cost: [{ id: 'old-sock', n: 1 }, { id: 'plastic-bag', n: 1 }],
+  },
+  {
+    id: 'glasses-shades',
+    name: 'VR Headset',
+    type: 'glasses',
+    emoji: '🥽',
+    blurb: 'Full immersion. Still can\'t see the next pipe.',
+    cost: [{ id: 'broken-glass', n: 1 }, { id: 'broken-iphone', n: 1 }],
+  },
+  {
+    id: 'glasses-visor',
+    name: 'Cyber Visor',
+    type: 'glasses',
+    emoji: '🥽',
+    blurb: 'HUD optional. Glow mandatory.',
+    cost: [{ id: 'broken-iphone', n: 1 }, { id: 'tangled-cables', n: 1 }, { id: 'usb-drive', n: 1 }],
+  },
+  {
+    id: 'body-sweater',
+    name: 'Cozy Sweater',
+    type: 'body',
+    emoji: '🧶',
+    blurb: 'Chunky knit that actually covers the goat torso.',
+    cost: [{ id: 'old-sock', n: 1 }, { id: 'duct-tape', n: 1 }, { id: 'pile-of-fur', n: 1 }],
+  },
+  {
+    id: 'body-tshirt',
+    name: 'Graphic Tee',
+    type: 'body',
+    emoji: '👕',
+    blurb: 'Streetwear for sidewalk royalty.',
+    cost: [{ id: 'plastic-bag', n: 1 }, { id: 'old-newspaper', n: 1 }],
+  },
+  {
+    id: 'pants-jeans',
+    name: 'Goat Jeans',
+    type: 'pants',
+    emoji: '👖',
+    blurb: 'Four legs, one look. Denim destiny.',
+    cost: [{ id: 'board-with-nails', n: 1 }, { id: 'duct-tape', n: 1 }],
+  },
+  {
+    id: 'pants-shorts',
+    name: 'Party Shorts',
+    type: 'pants',
+    emoji: '🩳',
+    blurb: 'Loud, short, and unapologetically goat.',
+    cost: [{ id: 'banana', n: 1 }, { id: 'spaghetti', n: 1 }],
+  },
+  {
+    id: 'shoes-kicks',
+    name: 'Sneakers',
+    type: 'shoes',
+    emoji: '👟',
+    blurb: 'Hoof-approved kicks. Grip optional, drip mandatory.',
+    cost: [{ id: 'rubber-ducky', n: 1 }, { id: 'duct-tape', n: 1 }],
+  },
+  {
+    id: 'shoes-boots',
+    name: 'Work Boots',
+    type: 'shoes',
+    emoji: '🥾',
+    blurb: 'Heavy-duty stompers. Tetanus not included.',
+    cost: [{ id: 'cinderblock', n: 1 }, { id: 'board-with-nails', n: 1 }],
+  },
+  {
+    id: 'weapon-blaster',
+    name: 'Pipe Blaster',
+    type: 'weapon',
+    emoji: '💥',
+    blurb: '3 shots per run. Clears the nearest pipe pair.',
+    shots: 3,
+    projectile: 'bolt',
+    cost: [{ id: 'broken-pipe', n: 1 }, { id: 'leaky-battery', n: 1 }, { id: 'aluminum-can', n: 1 }],
+  },
+  {
+    id: 'weapon-laser',
+    name: 'Laser Shooter',
+    type: 'weapon',
+    emoji: '🔴',
+    blurb: '3 glowing laser beams per run. Sci-fi sidewalk justice.',
+    shots: 3,
+    projectile: 'laser',
+    cost: [{ id: 'nail-gun', n: 1 }, { id: 'broken-iphone', n: 1 }, { id: 'leaky-battery', n: 1 }],
+  },
+  {
+    id: 'theme-cyberpunk',
+    name: 'Cyberpunk District',
+    type: 'theme',
+    emoji: '🌆',
+    blurb: 'Unlock the flashiest world in the game.',
+    themeId: 'cyberpunk',
+    cost: [
+      { id: 'virus', n: 1 },
+      { id: 'covid', n: 1 },
+      { id: 'broken-iphone', n: 1 },
+      { id: 'tangled-cables', n: 1 },
+      { id: 'usb-drive', n: 1 },
+    ],
+  },
+];
+
+const GEAR_SLOTS = ['hat', 'glasses', 'body', 'pants', 'shoes', 'weapon'];
+const SLOT_LABELS = {
+  hat: 'Hat',
+  glasses: 'Glasses',
+  body: 'Top',
+  pants: 'Pants',
+  shoes: 'Shoes',
+  weapon: 'Weapon',
+};
+
+// Map legacy clothing/weapon ids after inventory updates
+const LEGACY_GEAR = {
+  'hat-ducky': 'hat-baseball',
+  'hat-pinecone': 'hat-santa',
+  'clothing-tape-scarf': null,
+  'clothing-cape': 'body-sweater',
+  'clothing-gold-chain': 'body-tshirt',
+  'weapon-nailgun': 'weapon-laser',
+};
+
+function tradeById(id) {
+  return TRADES.find((t) => t.id === id);
+}
 
 const FLAVOR = {
   0: ['Even goats fall sometimes.', 'Warm-up bleat.', 'The ground is lava-ish.'],
@@ -261,15 +624,18 @@ const settings = loadSettings();
 function loadSettings() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEYS.settings) || '{}');
-    const theme = THEMES[raw.theme] ? raw.theme : 'meadow';
+    let theme = THEMES[raw.theme] ? raw.theme : 'meadow';
+    const fireSide = raw.fireSide === 'left' ? 'left' : 'right';
+    // Premium themes may be selected only if unlocked (checked at boot after unlock load)
     return {
       sfx: raw.sfx !== false,
       music: raw.music !== false,
       haptics: raw.haptics !== false,
       theme,
+      fireSide,
     };
   } catch {
-    return { sfx: true, music: true, haptics: true, theme: 'meadow' };
+    return { sfx: true, music: true, haptics: true, theme: 'meadow', fireSide: 'right' };
   }
 }
 function saveSettings() {
@@ -348,19 +714,142 @@ const menuBtn = $('menu-btn');
 const optSfx = $('opt-sfx');
 const optMusic = $('opt-music');
 const optHaptics = $('opt-haptics');
+const optFireLeft = $('opt-fire-left');
+const optFireRight = $('opt-fire-right');
+const tradeScreen = $('trade-screen');
+const tradeShopList = $('trade-shop-list');
+const tradeLoadout = $('trade-loadout');
+const tradeClose = $('trade-close');
+const tradeBtn = $('trade-btn');
+const tradeTabShop = $('trade-tab-shop');
+const tradeTabLoadout = $('trade-tab-loadout');
+const fireBtn = $('fire-btn');
+const fireCountEl = $('fire-count');
 
-// ─── Rewards state ────────────────────────────────────────────────────────────
-function loadOwned() {
+// ─── Rewards / inventory / gear state ─────────────────────────────────────────
+/** @returns {Record<string, number>} */
+function loadInventory() {
   try {
+    const raw = localStorage.getItem(KEYS.inventory);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        const out = {};
+        for (const [k, v] of Object.entries(obj)) out[k] = Math.max(0, Number(v) || 0);
+        return out;
+      }
+    }
+    // Migrate legacy owned-id array → count 1 each
     const arr = JSON.parse(localStorage.getItem(KEYS.owned) || '[]');
-    return new Set(Array.isArray(arr) ? arr : []);
+    const out = {};
+    if (Array.isArray(arr)) for (const id of arr) out[id] = (out[id] || 0) + 1;
+    return out;
+  } catch {
+    return {};
+  }
+}
+function saveInventory() {
+  localStorage.setItem(KEYS.inventory, JSON.stringify(inventory));
+  // Keep legacy key in sync for older builds
+  localStorage.setItem(KEYS.owned, JSON.stringify(Object.keys(inventory).filter((k) => inventory[k] > 0)));
+}
+function invCount(id) {
+  return inventory[id] || 0;
+}
+function uniqueOwnedCount() {
+  return Object.values(inventory).filter((n) => n > 0).length;
+}
+function hasReward(id) {
+  return invCount(id) > 0;
+}
+function addReward(id, n = 1) {
+  inventory[id] = invCount(id) + n;
+  saveInventory();
+}
+function canAfford(cost) {
+  return cost.every((c) => invCount(c.id) >= c.n);
+}
+function spendCost(cost) {
+  if (!canAfford(cost)) return false;
+  for (const c of cost) {
+    inventory[c.id] = invCount(c.id) - c.n;
+    if (inventory[c.id] <= 0) delete inventory[c.id];
+  }
+  saveInventory();
+  return true;
+}
+
+function loadUnlockedGear() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(KEYS.unlocked) || '[]');
+    const set = new Set();
+    if (Array.isArray(arr)) {
+      for (const id of arr) {
+        if (Object.prototype.hasOwnProperty.call(LEGACY_GEAR, id)) {
+          const mapped = LEGACY_GEAR[id];
+          if (mapped) set.add(mapped);
+        } else {
+          set.add(id);
+        }
+      }
+    }
+    return set;
   } catch {
     return new Set();
   }
 }
-function saveOwned() {
-  localStorage.setItem(KEYS.owned, JSON.stringify([...ownedRewards]));
+function saveUnlockedGear() {
+  localStorage.setItem(KEYS.unlocked, JSON.stringify([...unlockedGear]));
 }
+
+function loadUnlockedThemes() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(KEYS.unlockedThemes) || '[]');
+    const set = new Set(Array.isArray(arr) ? arr : []);
+    // Free themes always available
+    for (const t of Object.values(THEMES)) {
+      if (!t.requiresUnlock) set.add(t.id);
+    }
+    return set;
+  } catch {
+    const set = new Set();
+    for (const t of Object.values(THEMES)) {
+      if (!t.requiresUnlock) set.add(t.id);
+    }
+    return set;
+  }
+}
+function saveUnlockedThemes() {
+  localStorage.setItem(KEYS.unlockedThemes, JSON.stringify([...unlockedThemes]));
+}
+
+function loadEquipped() {
+  const blank = { hat: null, glasses: null, body: null, pants: null, shoes: null, weapon: null };
+  try {
+    const raw = JSON.parse(localStorage.getItem(KEYS.equipped) || '{}');
+    const mapId = (id) => {
+      if (!id) return null;
+      if (Object.prototype.hasOwnProperty.call(LEGACY_GEAR, id)) return LEGACY_GEAR[id];
+      return id;
+    };
+    // migrate old single clothing slot
+    let body = mapId(raw.body) || mapId(raw.clothing) || null;
+    return {
+      hat: mapId(raw.hat),
+      glasses: mapId(raw.glasses),
+      body,
+      pants: mapId(raw.pants),
+      shoes: mapId(raw.shoes),
+      weapon: mapId(raw.weapon),
+    };
+  } catch {
+    return blank;
+  }
+}
+function saveEquipped() {
+  localStorage.setItem(KEYS.equipped, JSON.stringify(equipped));
+}
+
 function loadSpins() {
   return Math.max(0, Number(localStorage.getItem(KEYS.spins) || 0));
 }
@@ -368,11 +857,16 @@ function saveSpins() {
   localStorage.setItem(KEYS.spins, String(pendingSpins));
 }
 
-let ownedRewards = loadOwned();
+let inventory = loadInventory();
+let unlockedGear = loadUnlockedGear();
+let unlockedThemes = loadUnlockedThemes();
+let equipped = loadEquipped();
 let pendingSpins = loadSpins();
 let spinsEarnedThisRun = 0;
 let spinning = false;
 let spinReturnTo = 'menu'; // 'menu' | 'gameover' | 'rewards'
+let weaponShots = 0;
+let tradeTab = 'shop'; // 'shop' | 'loadout'
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const State = { MENU: 'menu', PLAYING: 'playing', PAUSED: 'paused', DEAD: 'dead' };
@@ -413,6 +907,8 @@ let pipes = [];
 let clouds = [];
 /** @type {THREE.Points[]} */
 let particles = [];
+/** In-flight weapon bolts */
+let projectiles = [];
 /** @type {THREE.Mesh[]} */
 let hills = [];
 /** @type {THREE.Object3D[]} */
@@ -427,6 +923,20 @@ let balloons = [];
 let stars = null;
 /** @type {THREE.Points|null} */
 let fireflies = null;
+/** @type {THREE.Object3D[]} */
+let cityBuildings = [];
+/** @type {THREE.Group|null} */
+let rocketGroup = null;
+let rocketTimer = 8;
+let rocketState = 'idle'; // idle | lifting | flying
+let rocketTex = null;
+/** @type {THREE.Object3D[]} */
+let cyberCars = [];
+/** @type {THREE.Object3D[]} */
+let cyberBeacons = [];
+/** @type {THREE.Object3D[]} */
+let cyberFireworks = [];
+let fireworkTimer = 2;
 /** @type {THREE.Mesh|null} */
 let skyMesh = null;
 /** @type {THREE.Mesh|null} */
@@ -866,6 +1376,495 @@ function createFireflies() {
 }
 
 // ─── Goat ─────────────────────────────────────────────────────────────────────
+
+function createCyberpunkCity() {
+  // Procedural neon skyline for Cyberpunk District
+  const palette = [0x0a0618, 0x12082a, 0x1a0a38, 0x0c1030, 0x180628];
+  const neon = [0xff2d95, 0x00f0ff, 0xb400ff, 0xffe066, 0x40ffaa];
+  for (let i = 0; i < 18; i++) {
+    const g = new THREE.Group();
+    const w = 0.7 + Math.random() * 1.4;
+    const d = 0.6 + Math.random() * 1.1;
+    const h = 1.8 + Math.random() * 5.5;
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, d),
+      new THREE.MeshStandardMaterial({
+        color: palette[i % palette.length],
+        roughness: 0.7,
+        metalness: 0.45,
+        emissive: 0x100818,
+        emissiveIntensity: 0.25,
+      })
+    );
+    body.position.y = h / 2;
+    g.add(body);
+
+    // rooftop antenna / spire
+    if (Math.random() > 0.35) {
+      const spire = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.03, 0.06, 0.4 + Math.random() * 0.8, 6),
+        new THREE.MeshStandardMaterial({
+          color: 0x333344,
+          emissive: neon[i % neon.length],
+          emissiveIntensity: 0.7,
+        })
+      );
+      spire.position.y = h + 0.25;
+      g.add(spire);
+      const light = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 6, 6),
+        new THREE.MeshBasicMaterial({ color: neon[i % neon.length] })
+      );
+      light.position.y = h + 0.55;
+      g.add(light);
+    }
+
+    // window grid
+    const cols = 2 + Math.floor(Math.random() * 3);
+    const rows = 3 + Math.floor(Math.random() * 6);
+    const winMat = new THREE.MeshBasicMaterial({
+      color: neon[(i + 2) % neon.length],
+      transparent: true,
+      opacity: 0.55 + Math.random() * 0.35,
+    });
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (Math.random() < 0.2) continue;
+        const win = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.04), winMat);
+        win.position.set(
+          -w * 0.3 + (c / Math.max(1, cols - 1)) * w * 0.6,
+          0.35 + (r / Math.max(1, rows - 1)) * (h - 0.6),
+          d / 2 + 0.02
+        );
+        g.add(win);
+      }
+    }
+
+    // neon edge strip
+    const strip = new THREE.Mesh(
+      new THREE.BoxGeometry(w * 0.95, 0.05, 0.05),
+      new THREE.MeshBasicMaterial({ color: neon[i % neon.length] })
+    );
+    strip.position.set(0, h * (0.3 + Math.random() * 0.5), d / 2 + 0.03);
+    g.add(strip);
+
+    g.position.set(-22 + i * 2.6 + Math.random() * 0.6, CFG.groundY, -7.5 - Math.random() * 4);
+    g.userData.baseY = g.position.y;
+    g.userData.phase = Math.random() * Math.PI * 2;
+    g.userData.layer = i % 3;
+    g.userData.neon = neon[i % neon.length];
+    g.visible = false;
+    scene.add(g);
+    cityBuildings.push(g);
+  }
+
+  // Distant flashing beacon lights
+  const beaconColors = [0xff2d95, 0x00f0ff, 0xffe066, 0xb400ff, 0x40ffaa];
+  for (let i = 0; i < 14; i++) {
+    const light = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08 + Math.random() * 0.06, 8, 6),
+      new THREE.MeshBasicMaterial({
+        color: beaconColors[i % beaconColors.length],
+        transparent: true,
+        opacity: 0.85,
+      })
+    );
+    light.position.set(
+      -18 + Math.random() * 36,
+      CFG.groundY + 2.5 + Math.random() * 5.5,
+      -11 - Math.random() * 5
+    );
+    light.userData.phase = Math.random() * Math.PI * 2;
+    light.userData.speed = 2 + Math.random() * 5;
+    light.userData.baseScale = light.scale.x;
+    light.visible = false;
+    scene.add(light);
+    cyberBeacons.push(light);
+  }
+
+  // Horizontal flying vehicles (cyber cars / drones)
+  for (let i = 0; i < 6; i++) {
+    const car = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1028,
+      metalness: 0.6,
+      roughness: 0.35,
+      emissive: 0x200830,
+      emissiveIntensity: 0.4,
+    });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.16, 0.28), bodyMat);
+    car.add(body);
+    const cabin = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.12, 0.22),
+      new THREE.MeshStandardMaterial({
+        color: 0x40e0ff,
+        emissive: 0x1080a0,
+        emissiveIntensity: 0.7,
+        transparent: true,
+        opacity: 0.85,
+      })
+    );
+    cabin.position.set(-0.05, 0.12, 0);
+    car.add(cabin);
+    // neon underglow
+    const glow = new THREE.Mesh(
+      new THREE.BoxGeometry(0.65, 0.04, 0.32),
+      new THREE.MeshBasicMaterial({
+        color: i % 2 === 0 ? 0xff2d95 : 0x00f0ff,
+        transparent: true,
+        opacity: 0.55,
+      })
+    );
+    glow.position.y = -0.1;
+    car.add(glow);
+    // thruster trail points (simple cones)
+    const thruster = new THREE.Mesh(
+      new THREE.ConeGeometry(0.06, 0.22, 6),
+      new THREE.MeshBasicMaterial({ color: 0xff8040, transparent: true, opacity: 0.8 })
+    );
+    thruster.rotation.z = Math.PI / 2;
+    thruster.position.set(-0.42, 0, 0);
+    car.add(thruster);
+    car.userData.thruster = thruster;
+    car.userData.speed = 1.8 + Math.random() * 2.4;
+    car.userData.baseY = CFG.groundY + 2.2 + Math.random() * 3.8;
+    car.userData.phase = Math.random() * Math.PI * 2;
+    car.userData.dir = Math.random() > 0.5 ? 1 : -1;
+    car.position.set(
+      -20 + Math.random() * 40,
+      car.userData.baseY,
+      -9 - Math.random() * 4
+    );
+    if (car.userData.dir < 0) car.rotation.y = Math.PI;
+    car.visible = false;
+    scene.add(car);
+    cyberCars.push(car);
+  }
+}
+
+function spawnFirework(x, y, z) {
+  const colors = [0xff2d95, 0x00f0ff, 0xffe066, 0xb400ff, 0xffffff, 0x40ffaa];
+  const col = colors[Math.floor(Math.random() * colors.length)];
+  const count = 28;
+  const positions = new Float32Array(count * 3);
+  const velocities = [];
+  const cols = new Float32Array(count * 3);
+  const c = new THREE.Color(col);
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    const a = Math.random() * Math.PI * 2;
+    const elev = (Math.random() - 0.3) * Math.PI;
+    const sp = 2.5 + Math.random() * 4;
+    velocities.push({
+      x: Math.cos(a) * Math.cos(elev) * sp,
+      y: Math.sin(elev) * sp + 1.5,
+      z: Math.sin(a) * Math.cos(elev) * sp * 0.5,
+    });
+    cols[i * 3] = c.r;
+    cols[i * 3 + 1] = c.g;
+    cols[i * 3 + 2] = c.b;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  const mat = new THREE.PointsMaterial({
+    size: 0.22,
+    vertexColors: true,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true,
+  });
+  const pts = new THREE.Points(geo, mat);
+  pts.userData = { life: 1.1, maxLife: 1.1, velocities, drag: 1.2 };
+  scene.add(pts);
+  cyberFireworks.push(pts);
+}
+
+function updateCyberFireworks(dt) {
+  for (let i = cyberFireworks.length - 1; i >= 0; i--) {
+    const p = cyberFireworks[i];
+    p.userData.life -= dt;
+    const t = p.userData.life / p.userData.maxLife;
+    p.material.opacity = Math.max(0, t);
+    p.material.size = 0.08 + 0.2 * t;
+    const pos = p.geometry.attributes.position;
+    const vels = p.userData.velocities;
+    for (let j = 0; j < vels.length; j++) {
+      pos.array[j * 3] += vels[j].x * dt;
+      pos.array[j * 3 + 1] += vels[j].y * dt;
+      pos.array[j * 3 + 2] += vels[j].z * dt;
+      vels[j].y -= 6 * dt;
+      vels[j].x *= 1 - 0.8 * dt;
+      vels[j].z *= 1 - 0.8 * dt;
+    }
+    pos.needsUpdate = true;
+    if (p.userData.life <= 0) {
+      scene.remove(p);
+      p.geometry.dispose();
+      p.material.dispose();
+      cyberFireworks.splice(i, 1);
+    }
+  }
+}
+
+function createRocket() {
+  const g = new THREE.Group();
+  const loader = new THREE.TextureLoader();
+  rocketTex = loader.load(
+    'assets/background/Rocket.png',
+    () => {
+      /* ok */
+    },
+    undefined,
+    () => console.warn('Rocket texture failed to load')
+  );
+  rocketTex.colorSpace = THREE.SRGBColorSpace;
+
+  const mat = new THREE.MeshBasicMaterial({
+    map: rocketTex,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  // Tall plane matching rocket aspect (~342x910)
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 2.9), mat);
+  plane.position.y = 1.45;
+  g.add(plane);
+
+  // engine glow (under rocket)
+  const flame = new THREE.Mesh(
+    new THREE.ConeGeometry(0.22, 0.7, 8),
+    new THREE.MeshBasicMaterial({
+      color: 0xff8a30,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+    })
+  );
+  flame.position.y = -0.15;
+  flame.rotation.x = Math.PI;
+  g.add(flame);
+  g.userData.flame = flame;
+
+  const glow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.35, 10, 8),
+    new THREE.MeshBasicMaterial({
+      color: 0xff6020,
+      transparent: true,
+      opacity: 0.35,
+      depthWrite: false,
+    })
+  );
+  glow.position.y = -0.2;
+  g.add(glow);
+  g.userData.glow = glow;
+
+  g.position.set(6, CFG.groundY - 0.2, -9);
+  g.visible = false;
+  g.userData.vy = 0;
+  g.userData.baseX = 6;
+  scene.add(g);
+  rocketGroup = g;
+}
+
+function setCyberpunkDecorVisible(on) {
+  for (const b of cityBuildings) b.visible = on;
+  for (const c of cyberCars) c.visible = on;
+  for (const b of cyberBeacons) b.visible = on;
+  if (!on) {
+    if (rocketGroup) {
+      rocketGroup.visible = false;
+      rocketState = 'idle';
+      rocketTimer = 6 + Math.random() * 8;
+    }
+    for (const fw of cyberFireworks) {
+      scene.remove(fw);
+      fw.geometry.dispose();
+      fw.material.dispose();
+    }
+    cyberFireworks = [];
+  }
+}
+
+function updateRocket(dt, theme) {
+  if (!rocketGroup) return;
+  const cyber = theme.id === 'cyberpunk';
+  if (!cyber) {
+    rocketGroup.visible = false;
+    return;
+  }
+
+  const flame = rocketGroup.userData.flame;
+  const glow = rocketGroup.userData.glow;
+
+  if (rocketState === 'idle') {
+    rocketTimer -= dt;
+    rocketGroup.visible = false;
+    if (rocketTimer <= 0) {
+      // Spawn on ground mid/right, then lift off
+      const x = 2 + Math.random() * 6;
+      rocketGroup.position.set(x, CFG.groundY - 0.15, -8.5 - Math.random() * 2);
+      rocketGroup.userData.vy = 0;
+      rocketGroup.userData.baseX = x;
+      rocketGroup.rotation.z = 0;
+      rocketGroup.visible = true;
+      rocketState = 'lifting';
+      rocketTimer = 0;
+      if (flame) flame.visible = true;
+      if (glow) glow.visible = true;
+    }
+    return;
+  }
+
+  rocketGroup.visible = true;
+  // Pulse flame
+  if (flame) {
+    flame.scale.y = 0.85 + Math.sin(time * 28) * 0.25 + Math.random() * 0.1;
+    flame.scale.x = 0.9 + Math.sin(time * 22) * 0.15;
+    flame.material.opacity = 0.65 + Math.sin(time * 30) * 0.2;
+  }
+  if (glow) {
+    glow.scale.setScalar(0.9 + Math.sin(time * 18) * 0.2);
+    glow.material.opacity = 0.25 + Math.sin(time * 20) * 0.12;
+  }
+
+  if (rocketState === 'lifting') {
+    rocketTimer += dt;
+    // charge for a moment with small shake
+    rocketGroup.position.x = rocketGroup.userData.baseX + Math.sin(time * 40) * 0.03;
+    if (rocketTimer > 0.85) {
+      rocketState = 'flying';
+      rocketGroup.userData.vy = 1.2;
+    }
+    // ground smoke puffs
+    if (Math.random() < 0.35) {
+      try {
+        spawnBurst(
+          rocketGroup.position.x,
+          CFG.groundY + 0.2,
+          4,
+          [0xff8a4c, 0xffd166, 0x888888],
+          2.2,
+          0.35
+        );
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    return;
+  }
+
+  if (rocketState === 'flying') {
+    rocketGroup.userData.vy += 4.5 * dt;
+    rocketGroup.position.y += rocketGroup.userData.vy * dt;
+    rocketGroup.position.x += Math.sin(time * 1.4) * 0.15 * dt;
+    rocketGroup.rotation.z = Math.sin(time * 2) * 0.04;
+    // trail
+    if (Math.random() < 0.5) {
+      try {
+        spawnBurst(
+          rocketGroup.position.x,
+          rocketGroup.position.y - 0.3,
+          3,
+          [0xff6020, 0xffd166, 0xffffff],
+          1.8,
+          0.28
+        );
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    if (rocketGroup.position.y > 12) {
+      rocketGroup.visible = false;
+      rocketState = 'idle';
+      rocketTimer = 10 + Math.random() * 14;
+    }
+  }
+}
+
+function updateCity(dt, playing) {
+  const scrollMul = playing ? 1 : 0.35;
+  for (const b of cityBuildings) {
+    if (!b.visible) continue;
+    const layer = b.userData.layer ?? 1;
+    const spd = (0.35 + layer * 0.22) * scrollMul * (playing ? 1.5 : 1);
+    b.position.x -= spd * dt;
+    b.traverse((obj) => {
+      if (obj.isMesh && obj.material && obj.material.opacity !== undefined && obj.geometry?.type === 'BoxGeometry') {
+        if (obj.material.opacity < 0.95 && obj.material.color) {
+          if (Math.random() < 0.004) obj.material.opacity = 0.2 + Math.random() * 0.75;
+        }
+      }
+    });
+    if (b.position.x < -26) b.position.x += 48;
+  }
+
+  // Flashing distant beacons
+  for (const light of cyberBeacons) {
+    if (!light.visible) continue;
+    const flash = 0.35 + 0.65 * Math.abs(Math.sin(time * light.userData.speed + light.userData.phase));
+    // occasional hard strobe
+    const strobe = Math.sin(time * light.userData.speed * 3.5 + light.userData.phase) > 0.92 ? 1.4 : 1;
+    light.material.opacity = Math.min(1, flash * strobe);
+    const s = light.userData.baseScale * (0.85 + flash * 0.5);
+    light.scale.setScalar(s);
+    light.position.x -= 0.15 * scrollMul * dt;
+    if (light.position.x < -22) light.position.x += 44;
+  }
+
+  // Flying vehicles
+  for (const car of cyberCars) {
+    if (!car.visible) continue;
+    const dir = car.userData.dir || 1;
+    car.position.x += car.userData.speed * dir * dt * (playing ? 1.15 : 0.7);
+    car.position.y = car.userData.baseY + Math.sin(time * 1.8 + car.userData.phase) * 0.25;
+    if (car.userData.thruster) {
+      car.userData.thruster.scale.x = 0.8 + Math.sin(time * 24 + car.userData.phase) * 0.35;
+      car.userData.thruster.material.opacity = 0.55 + Math.sin(time * 20) * 0.3;
+    }
+    // soft trail particles
+    if (Math.random() < 0.12) {
+      try {
+        spawnBurst(
+          car.position.x - dir * 0.4,
+          car.position.y,
+          2,
+          [0xff2d95, 0x00f0ff, 0xff8040],
+          1.2,
+          0.25
+        );
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    if (dir > 0 && car.position.x > 24) {
+      car.position.x = -24;
+      car.userData.baseY = CFG.groundY + 2.2 + Math.random() * 3.8;
+    } else if (dir < 0 && car.position.x < -24) {
+      car.position.x = 24;
+      car.userData.baseY = CFG.groundY + 2.2 + Math.random() * 3.8;
+    }
+  }
+
+  // Fireworks
+  if (cyberBeacons.length && cyberBeacons[0].visible) {
+    fireworkTimer -= dt;
+    if (fireworkTimer <= 0) {
+      fireworkTimer = 1.6 + Math.random() * 2.8;
+      spawnFirework(
+        -10 + Math.random() * 20,
+        CFG.groundY + 3.5 + Math.random() * 4,
+        -10 - Math.random() * 3
+      );
+    }
+  }
+  updateCyberFireworks(dt);
+}
+
 function createGoat() {
   const group = new THREE.Group();
   const fur = new THREE.MeshStandardMaterial({ color: 0xf2e6d0, roughness: 0.88, metalness: 0.02 });
@@ -1013,6 +2012,576 @@ function createGoat() {
   goat.legFR = legFR;
   goat.legBL = legBL;
   goat.legBR = legBR;
+  goat.parts = attachGoatCosmetics(group);
+  applyLoadoutVisuals();
+}
+
+/** Procedural cosmetics / weapon meshes parented to the goat */
+function attachGoatCosmetics(group) {
+  const parts = {};
+  const yellow = new THREE.MeshStandardMaterial({ color: 0xf5c542, roughness: 0.55, metalness: 0.2, emissive: 0x664400, emissiveIntensity: 0.15 });
+  const orange = new THREE.MeshStandardMaterial({ color: 0xff6a1a, roughness: 0.5, metalness: 0.15, emissive: 0x662200, emissiveIntensity: 0.12 });
+  const blackG = new THREE.MeshStandardMaterial({ color: 0x1a1a22, roughness: 0.35, metalness: 0.35 });
+  const cyan = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.25, metalness: 0.6, emissive: 0x00a0ff, emissiveIntensity: 0.55 });
+  const magenta = new THREE.MeshStandardMaterial({ color: 0xff2d95, roughness: 0.3, metalness: 0.5, emissive: 0xaa0060, emissiveIntensity: 0.4 });
+  const silver = new THREE.MeshStandardMaterial({ color: 0xc0c8d0, roughness: 0.35, metalness: 0.75 });
+  const gunMat = new THREE.MeshStandardMaterial({ color: 0x3a3a44, roughness: 0.45, metalness: 0.55 });
+  const gunAccent = new THREE.MeshStandardMaterial({ color: 0xff8a4c, roughness: 0.4, metalness: 0.4, emissive: 0x662200, emissiveIntensity: 0.25 });
+  const redKnit = new THREE.MeshStandardMaterial({ color: 0xc43c3c, roughness: 0.85, metalness: 0.05, emissive: 0x401010, emissiveIntensity: 0.08 });
+  const creamKnit = new THREE.MeshStandardMaterial({ color: 0xf0e0d0, roughness: 0.9 });
+  const teeBlue = new THREE.MeshStandardMaterial({ color: 0x3a7bd5, roughness: 0.7, metalness: 0.05, emissive: 0x102040, emissiveIntensity: 0.1 });
+  const denim = new THREE.MeshStandardMaterial({ color: 0x3a4f7a, roughness: 0.75, metalness: 0.1 });
+  const sneaker = new THREE.MeshStandardMaterial({ color: 0xffe033, roughness: 0.45, metalness: 0.12, emissive: 0x554400, emissiveIntensity: 0.12 });
+  const sneakerAccent = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.2 });
+  const capRed = new THREE.MeshStandardMaterial({ color: 0xd43030, roughness: 0.55, metalness: 0.1 });
+  const capNavy = new THREE.MeshStandardMaterial({ color: 0x1a2a4a, roughness: 0.55 });
+  const santaRed = new THREE.MeshStandardMaterial({ color: 0xd42030, roughness: 0.7, emissive: 0x400810, emissiveIntensity: 0.12 });
+  const santaWhite = new THREE.MeshStandardMaterial({ color: 0xf8f8f8, roughness: 0.9 });
+  const laserBody = new THREE.MeshStandardMaterial({ color: 0x1a2030, roughness: 0.35, metalness: 0.7, emissive: 0x001830, emissiveIntensity: 0.3 });
+  const laserGlow = new THREE.MeshStandardMaterial({ color: 0xff2060, roughness: 0.25, metalness: 0.5, emissive: 0xff1040, emissiveIntensity: 0.85 });
+
+  // ── Hard hat ──────────────────────────────────────────────────────────────
+  {
+    const g = new THREE.Group();
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), yellow);
+    dome.position.y = 0.02;
+    g.add(dome);
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.04, 16), yellow);
+    brim.position.y = -0.02;
+    g.add(brim);
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.08, 0.42), orange);
+    stripe.position.y = 0.08;
+    g.add(stripe);
+    g.position.set(0.4, 0.58, 0);
+    g.visible = false;
+    group.add(g);
+    parts['hat-hardhat'] = g;
+  }
+
+  // Traffic cone
+  {
+    const g = new THREE.Group();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.32, 10), orange);
+    cone.position.y = 0.12;
+    g.add(cone);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.04, 0.28), blackG);
+    g.add(base);
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.02, 6, 12), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }));
+    band.rotation.x = Math.PI / 2;
+    band.position.y = 0.1;
+    g.add(band);
+    g.position.set(0.4, 0.58, 0);
+    g.visible = false;
+    group.add(g);
+    parts['hat-cone'] = g;
+  }
+
+  // Baseball cap
+  {
+    const g = new THREE.Group();
+    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.18, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), capRed);
+    crown.position.y = 0.02;
+    crown.scale.set(1.05, 0.85, 1.05);
+    g.add(crown);
+    // brim (flat disc half)
+    const brim = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.03, 0.28), capNavy);
+    brim.position.set(0.16, -0.02, 0);
+    brim.rotation.z = -0.12;
+    g.add(brim);
+    const button = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), silver);
+    button.position.y = 0.14;
+    g.add(button);
+    g.position.set(0.4, 0.56, 0);
+    g.rotation.z = -0.08;
+    g.visible = false;
+    group.add(g);
+    parts['hat-baseball'] = g;
+  }
+
+  // Santa hat
+  {
+    const g = new THREE.Group();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.42, 12), santaRed);
+    cone.position.y = 0.16;
+    cone.rotation.z = 0.35;
+    cone.position.x = -0.06;
+    g.add(cone);
+    const trim = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.05, 8, 16), santaWhite);
+    trim.rotation.x = Math.PI / 2;
+    trim.position.y = -0.02;
+    g.add(trim);
+    const pom = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), santaWhite);
+    pom.position.set(-0.18, 0.38, 0);
+    g.add(pom);
+    g.position.set(0.4, 0.55, 0);
+    g.userData.soft = { type: 'santa', pom, basePom: { x: -0.18, y: 0.38, z: 0 }, swing: 0, vel: 0 };
+    g.visible = false;
+    group.add(g);
+    parts['hat-santa'] = g;
+  }
+
+  // VR headset (white) — oversized so it reads clearly from the side camera
+  {
+    const g = new THREE.Group();
+    const whiteShell = new THREE.MeshStandardMaterial({
+      color: 0xf5f5f8,
+      roughness: 0.35,
+      metalness: 0.25,
+      emissive: 0x222228,
+      emissiveIntensity: 0.1,
+    });
+    const darkLens = new THREE.MeshStandardMaterial({
+      color: 0x101018,
+      roughness: 0.15,
+      metalness: 0.55,
+      emissive: 0x050510,
+      emissiveIntensity: 0.25,
+    });
+    const accent = new THREE.MeshStandardMaterial({
+      color: 0xe8e8ee,
+      roughness: 0.4,
+      metalness: 0.3,
+    });
+    // Main headset body (chunky)
+    const shell = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.26, 0.62), whiteShell);
+    shell.position.set(0.04, 0, 0);
+    g.add(shell);
+    // Front faceplate
+    const face = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.22, 0.58), whiteShell);
+    face.position.set(0.16, 0, 0);
+    g.add(face);
+    // Dual dark lenses
+    const lensL = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.06, 14), darkLens);
+    lensL.rotation.z = Math.PI / 2;
+    lensL.position.set(0.2, 0, 0.14);
+    g.add(lensL);
+    const lensR = lensL.clone();
+    lensR.position.z = -0.14;
+    g.add(lensR);
+    // Top strap mount
+    const brow = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.08, 0.52), accent);
+    brow.position.set(0.02, 0.14, 0);
+    g.add(brow);
+    // Side straps
+    for (const z of [0.28, -0.28]) {
+      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.08), whiteShell);
+      strap.position.set(-0.16, 0, z);
+      g.add(strap);
+    }
+    // Rear band
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.045, 8, 16, Math.PI * 1.2), whiteShell);
+    band.rotation.y = Math.PI / 2;
+    band.position.set(-0.16, 0, 0);
+    g.add(band);
+    // Status LED
+    const led = new THREE.Mesh(
+      new THREE.SphereGeometry(0.035, 8, 6),
+      new THREE.MeshBasicMaterial({ color: 0x40ffaa })
+    );
+    led.position.set(0.18, 0.1, 0);
+    g.add(led);
+    // Sit on face, pushed out so it isn't buried in the head mesh
+    g.position.set(0.62, 0.36, 0);
+    g.scale.setScalar(1.15);
+    g.visible = false;
+    group.add(g);
+    parts['glasses-shades'] = g;
+  }
+
+  // Cyber visor
+  {
+    const g = new THREE.Group();
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.42), cyan);
+    g.add(visor);
+    const rim = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.46), magenta);
+    rim.position.x = -0.04;
+    g.add(rim);
+    const glow = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.38), new THREE.MeshBasicMaterial({ color: 0x66ffff }));
+    glow.position.x = 0.04;
+    g.add(glow);
+    g.position.set(0.7, 0.36, 0);
+    g.visible = false;
+    group.add(g);
+    parts['glasses-visor'] = g;
+  }
+
+  // ── Body: cozy sweater (covers torso + belly) ─────────────────────────────
+  {
+    const g = new THREE.Group();
+    // Main torso shell — slightly larger than body sphere (r0.4 * scale)
+    const torso = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), redKnit);
+    torso.scale.set(1.22, 1.02, 0.95);
+    torso.position.set(0, -0.02, 0);
+    g.add(torso);
+    // Belly panel
+    const belly = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 12), creamKnit);
+    belly.scale.set(1.0, 0.65, 0.7);
+    belly.position.set(0.02, -0.18, 0.14);
+    g.add(belly);
+    // Collar
+    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.045, 8, 16), creamKnit);
+    collar.rotation.x = Math.PI / 2.3;
+    collar.position.set(0.22, 0.14, 0);
+    g.add(collar);
+    // Sleeves on shoulders (front)
+    for (const z of [0.22, -0.22]) {
+      const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.28, 10), redKnit);
+      sleeve.position.set(0.12, -0.08, z);
+      sleeve.rotation.x = z > 0 ? 0.5 : -0.5;
+      sleeve.rotation.z = 0.35;
+      g.add(sleeve);
+    }
+    // Cuff stripes
+    const stripe = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.025, 6, 16), creamKnit);
+    stripe.rotation.x = Math.PI / 2;
+    stripe.position.set(-0.05, -0.28, 0);
+    stripe.scale.set(1.1, 1, 0.9);
+    g.add(stripe);
+    g.visible = false;
+    group.add(g);
+    parts['body-sweater'] = g;
+  }
+
+  // ── Body: graphic tee ─────────────────────────────────────────────────────
+  {
+    const g = new THREE.Group();
+    const torso = new THREE.Mesh(new THREE.SphereGeometry(0.41, 18, 14), teeBlue);
+    torso.scale.set(1.2, 0.78, 0.92);
+    torso.position.set(0.02, 0.02, 0);
+    g.add(torso);
+    // short sleeves
+    for (const z of [0.24, -0.24]) {
+      const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.16, 8), teeBlue);
+      sleeve.position.set(0.1, 0.02, z);
+      sleeve.rotation.x = z > 0 ? 0.65 : -0.65;
+      g.add(sleeve);
+    }
+    // graphic print on side facing camera
+    const print = new THREE.Mesh(
+      new THREE.CircleGeometry(0.12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xffe066 })
+    );
+    print.position.set(0.05, 0.02, 0.36);
+    g.add(print);
+    const print2 = new THREE.Mesh(
+      new THREE.CircleGeometry(0.06, 8),
+      new THREE.MeshBasicMaterial({ color: 0xff4060 })
+    );
+    print2.position.set(0.05, 0.02, 0.38);
+    g.add(print2);
+    // hem
+    const hem = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.4, 0.06, 16), blackG);
+    hem.position.set(0, -0.22, 0);
+    hem.scale.set(1.05, 1, 0.85);
+    g.add(hem);
+    g.visible = false;
+    group.add(g);
+    parts['body-tshirt'] = g;
+  }
+
+  // ── Pants: denim on all four legs (parented to leg groups) ─────────────────
+  {
+    const g = new THREE.Group(); // container for visibility toggle only
+    g.visible = false;
+    const pantMeshes = [];
+    const legs = [
+      { leg: goat.legFL, x: 0.18, z: 0.16 },
+      { leg: goat.legFR, x: 0.18, z: -0.16 },
+      { leg: goat.legBL, x: -0.18, z: 0.14 },
+      { leg: goat.legBR, x: -0.18, z: -0.14 },
+    ];
+    for (const { leg } of legs) {
+      if (!leg) continue;
+      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.058, 0.24, 10), denim);
+      upper.position.y = -0.1;
+      leg.add(upper);
+      pantMeshes.push(upper);
+      const lower = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.048, 0.14, 8), denim);
+      lower.position.y = -0.26;
+      leg.add(lower);
+      pantMeshes.push(lower);
+      // cuff
+      const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 6, 10), blackG);
+      cuff.rotation.x = Math.PI / 2;
+      cuff.position.y = -0.33;
+      leg.add(cuff);
+      pantMeshes.push(cuff);
+    }
+    // waistband around body bottom
+    const waist = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.4, 0.1, 16), denim);
+    waist.position.set(0, -0.32, 0);
+    waist.scale.set(1.05, 1, 0.82);
+    g.add(waist);
+    pantMeshes.push(waist);
+    g.userData.pantMeshes = pantMeshes;
+    for (const m of pantMeshes) m.visible = false;
+    group.add(g);
+    parts['pants-jeans'] = g;
+  }
+
+  // ── Pants: party shorts (short, bright, only upper legs) ──────────────────
+  {
+    const g = new THREE.Group();
+    g.visible = false;
+    const pantMeshes = [];
+    const shortMat = new THREE.MeshStandardMaterial({
+      color: 0xff5a9a,
+      roughness: 0.65,
+      metalness: 0.05,
+      emissive: 0x401028,
+      emissiveIntensity: 0.12,
+    });
+    const stripeMat = new THREE.MeshStandardMaterial({
+      color: 0xffe066,
+      roughness: 0.55,
+      emissive: 0x665500,
+      emissiveIntensity: 0.15,
+    });
+    const legs = [goat.legFL, goat.legFR, goat.legBL, goat.legBR];
+    for (const leg of legs) {
+      if (!leg) continue;
+      // Short upper only — no lower pant leg
+      const short = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.07, 0.16, 10), shortMat);
+      short.position.y = -0.08;
+      leg.add(short);
+      pantMeshes.push(short);
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.014, 6, 12), stripeMat);
+      band.rotation.x = Math.PI / 2;
+      band.position.y = -0.15;
+      leg.add(band);
+      pantMeshes.push(band);
+    }
+    // Loud waistband
+    const waist = new THREE.Mesh(new THREE.CylinderGeometry(0.39, 0.41, 0.09, 16), shortMat);
+    waist.position.set(0, -0.3, 0);
+    waist.scale.set(1.05, 1, 0.82);
+    g.add(waist);
+    pantMeshes.push(waist);
+    const waistStripe = new THREE.Mesh(new THREE.CylinderGeometry(0.405, 0.42, 0.035, 16), stripeMat);
+    waistStripe.position.set(0, -0.27, 0);
+    waistStripe.scale.set(1.05, 1, 0.82);
+    g.add(waistStripe);
+    pantMeshes.push(waistStripe);
+    g.userData.pantMeshes = pantMeshes;
+    for (const m of pantMeshes) m.visible = false;
+    group.add(g);
+    parts['pants-shorts'] = g;
+  }
+
+  // ── Shoes: sneakers on each hoof (oversized yellow kicks) ─────────────────
+  {
+    const g = new THREE.Group();
+    g.visible = false;
+    const shoeMeshes = [];
+    const legs = [goat.legFL, goat.legFR, goat.legBL, goat.legBR];
+    for (const leg of legs) {
+      if (!leg) continue;
+      const shoe = new THREE.Group();
+      shoe.visible = false;
+      // Big chunky sole
+      const sole = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.07, 0.16), blackG);
+      sole.position.set(0.03, -0.42, 0);
+      shoe.add(sole);
+      // Tall yellow upper
+      const upper = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.15), sneaker);
+      upper.position.set(0.03, -0.34, 0);
+      shoe.add(upper);
+      // White stripe accent
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.09, 0.16), sneakerAccent);
+      stripe.position.set(0.04, -0.34, 0);
+      shoe.add(stripe);
+      // Rounded toe
+      const toe = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), sneaker);
+      toe.scale.set(1.2, 0.75, 1.05);
+      toe.position.set(0.1, -0.35, 0);
+      shoe.add(toe);
+      // Heel tab
+      const heel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.14), sneaker);
+      heel.position.set(-0.05, -0.32, 0);
+      shoe.add(heel);
+      shoe.scale.setScalar(1.25);
+      leg.add(shoe);
+      shoeMeshes.push(shoe);
+    }
+    g.userData.shoeMeshes = shoeMeshes;
+    group.add(g);
+    parts['shoes-kicks'] = g;
+  }
+
+  // ── Shoes: chunky work boots ──────────────────────────────────────────────
+  {
+    const g = new THREE.Group();
+    g.visible = false;
+    const shoeMeshes = [];
+    const bootMat = new THREE.MeshStandardMaterial({
+      color: 0x5a3820,
+      roughness: 0.7,
+      metalness: 0.15,
+    });
+    const bootDark = new THREE.MeshStandardMaterial({
+      color: 0x2a1a10,
+      roughness: 0.65,
+      metalness: 0.2,
+    });
+    const steel = new THREE.MeshStandardMaterial({
+      color: 0xa0a8b0,
+      roughness: 0.35,
+      metalness: 0.8,
+    });
+    const legs = [goat.legFL, goat.legFR, goat.legBL, goat.legBR];
+    for (const leg of legs) {
+      if (!leg) continue;
+      const boot = new THREE.Group();
+      boot.visible = false;
+      // tall shaft covering lower leg
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.065, 0.2, 10), bootMat);
+      shaft.position.y = -0.3;
+      boot.add(shaft);
+      // sole
+      const sole = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.05, 0.11), bootDark);
+      sole.position.set(0.02, -0.41, 0);
+      boot.add(sole);
+      // toe box
+      const toe = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.1), steel);
+      toe.position.set(0.06, -0.37, 0);
+      boot.add(toe);
+      // lace panel
+      const tongue = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.08), bootMat);
+      tongue.position.set(0.02, -0.3, 0);
+      boot.add(tongue);
+      leg.add(boot);
+      shoeMeshes.push(boot);
+    }
+    g.userData.shoeMeshes = shoeMeshes;
+    group.add(g);
+    parts['shoes-boots'] = g;
+  }
+
+  // Pipe blaster
+  {
+    const g = new THREE.Group();
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.35, 8), gunMat);
+    barrel.rotation.z = Math.PI / 2;
+    barrel.position.set(0.15, 0, 0);
+    g.add(barrel);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.1), gunMat);
+    g.add(body);
+    const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.04, 0.06, 8), gunAccent);
+    tip.rotation.z = Math.PI / 2;
+    tip.position.set(0.34, 0, 0);
+    g.add(tip);
+    g.position.set(0.15, -0.05, 0.28);
+    g.rotation.y = -0.2;
+    g.visible = false;
+    group.add(g);
+    parts['weapon-blaster'] = g;
+  }
+
+  // Laser shooter
+  {
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.1, 0.1), laserBody);
+    g.add(body);
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.045, 0.32, 10), laserBody);
+    barrel.rotation.z = Math.PI / 2;
+    barrel.position.set(0.2, 0.02, 0);
+    g.add(barrel);
+    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.34, 8), laserGlow);
+    core.rotation.z = Math.PI / 2;
+    core.position.set(0.2, 0.02, 0);
+    g.add(core);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), laserGlow);
+    tip.position.set(0.38, 0.02, 0);
+    g.add(tip);
+    const handle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.07), blackG);
+    handle.position.set(-0.04, -0.1, 0);
+    g.add(handle);
+    g.position.set(0.18, -0.02, 0.28);
+    g.visible = false;
+    group.add(g);
+    parts['weapon-laser'] = g;
+  }
+
+  return parts;
+}
+
+function setPartVisible(mesh, on) {
+  if (!mesh) return;
+  mesh.visible = on;
+  // pants/shoes store extra meshes parented to legs
+  if (mesh.userData.pantMeshes) {
+    for (const m of mesh.userData.pantMeshes) m.visible = on;
+  }
+  if (mesh.userData.shoeMeshes) {
+    for (const m of mesh.userData.shoeMeshes) m.visible = on;
+  }
+}
+
+function applyLoadoutVisuals() {
+  if (!goat.parts) return;
+  for (const [id, mesh] of Object.entries(goat.parts)) {
+    const trade = tradeById(id);
+    if (!trade) {
+      setPartVisible(mesh, false);
+      continue;
+    }
+    const slot = trade.type;
+    setPartVisible(mesh, equipped[slot] === id);
+  }
+}
+
+/** Soft motion for hats / loose bits */
+function updateClothingPhysics(dt) {
+  if (!goat.parts) return;
+  const accel = THREE.MathUtils.clamp(-goat.vy * 0.08 + goat.flapPhase * 0.35, -0.9, 0.9);
+  const target = accel + Math.sin(time * 3.2) * 0.04;
+
+  for (const mesh of Object.values(goat.parts)) {
+    if (!mesh.visible || !mesh.userData.soft) continue;
+    const s = mesh.userData.soft;
+    const k = 16;
+    const d = 6.5;
+    s.vel += (target * 1.1 - s.swing) * k * dt;
+    s.vel *= Math.max(0, 1 - d * dt);
+    s.swing += s.vel * dt;
+    s.swing = THREE.MathUtils.clamp(s.swing, -1.0, 1.0);
+
+    if (s.type === 'santa' && s.pom) {
+      s.pom.position.x = s.basePom.x + s.swing * 0.08;
+      s.pom.position.y = s.basePom.y + Math.abs(s.swing) * 0.04;
+      s.pom.position.z = s.basePom.z + Math.sin(time * 5) * 0.02;
+    }
+  }
+}
+
+function equippedWeaponTrade() {
+  if (!equipped.weapon) return null;
+  return tradeById(equipped.weapon);
+}
+
+function applyFireBtnSide() {
+  if (!fireBtn) return;
+  const side = settings.fireSide === 'left' ? 'left' : 'right';
+  fireBtn.classList.toggle('fire-left', side === 'left');
+  fireBtn.classList.toggle('fire-right', side === 'right');
+}
+
+function refreshWeaponHUD() {
+  if (!fireBtn) return;
+  applyFireBtnSide();
+  const w = equippedWeaponTrade();
+  if (state === State.PLAYING && w && weaponShots > 0) {
+    show(fireBtn);
+    fireBtn.classList.remove('spent');
+    if (fireCountEl) fireCountEl.textContent = String(weaponShots);
+  } else if (state === State.PLAYING && w) {
+    show(fireBtn);
+    fireBtn.classList.add('spent');
+    if (fireCountEl) fireCountEl.textContent = '0';
+  } else {
+    hide(fireBtn);
+    fireBtn.classList.remove('spent');
+  }
 }
 
 // ─── Pipes ────────────────────────────────────────────────────────────────────
@@ -1039,6 +2608,7 @@ class PipePair {
     this.group.add(this.top);
     this.group.add(this.bot);
     this.group.position.x = x;
+    this.group.userData.neon = !!(this.top.userData.neon || this.bot.userData.neon);
     scene.add(this.group);
 
     this.gapTop = gapTop;
@@ -1051,15 +2621,25 @@ class PipePair {
     const radius = CFG.pipeWidth / 2;
     const segs = isMobile ? 16 : 22;
     const theme = activeTheme();
-    const hueShift = (Math.random() - 0.5) * 0.05;
     const p = theme.pipe;
+    const isNeon = !!p.neon;
+    // Pick a neon hue from palette (or base hue with small shift)
+    const hues = p.neonHues && p.neonHues.length ? p.neonHues : [p.h];
+    const hue = hues[Math.floor(Math.random() * hues.length)];
+    const hue2 = hues[Math.floor(Math.random() * hues.length)];
+    const hueShift = isNeon ? 0 : (Math.random() - 0.5) * 0.05;
+    const h = hue + hueShift;
+    const emisIntensity = isNeon ? (p.emissiveIntensity ?? 0.95) : 0.2;
+    const emisColor = isNeon
+      ? new THREE.Color().setHSL(h, 1, 0.45)
+      : new THREE.Color(p.emissive);
 
     const shaftMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color().setHSL(p.h + hueShift, p.s, p.l),
-      roughness: 0.34,
-      metalness: 0.26,
-      emissive: p.emissive,
-      emissiveIntensity: 0.2,
+      color: new THREE.Color().setHSL(h, isNeon ? 0.95 : p.s, isNeon ? 0.45 : p.l),
+      roughness: isNeon ? 0.18 : 0.34,
+      metalness: isNeon ? 0.55 : 0.26,
+      emissive: emisColor,
+      emissiveIntensity: emisIntensity,
     });
 
     // Circular tube body — long enough to leave the frame
@@ -1067,65 +2647,111 @@ class PipePair {
       new THREE.CylinderGeometry(radius, radius, height, segs),
       shaftMat
     );
-    shaft.castShadow = true;
+    shaft.castShadow = !isNeon;
     shaft.receiveShadow = true;
+    shaft.userData.pipePart = 'shaft';
     g.add(shaft);
+
+    // Neon outer halo (additive-ish via emissive shell)
+    if (isNeon) {
+      const halo = new THREE.Mesh(
+        new THREE.CylinderGeometry(radius * 1.08, radius * 1.08, height * 0.98, segs, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color().setHSL(h, 1, 0.55),
+          transparent: true,
+          opacity: 0.22,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        })
+      );
+      halo.userData.pipePart = 'halo';
+      g.add(halo);
+    }
 
     const stripe = new THREE.Mesh(
       new THREE.CylinderGeometry(radius * 0.18, radius * 0.18, height * 0.92, 8),
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color().setHSL(p.h + 0.02, Math.min(1, p.s + 0.1), Math.min(0.75, p.l + 0.15)),
-        roughness: 0.3,
-        metalness: 0.35,
-        emissive: p.emissive,
-        emissiveIntensity: 0.35,
+        color: new THREE.Color().setHSL(hue2, Math.min(1, p.s + 0.1), Math.min(0.75, p.l + 0.15)),
+        roughness: isNeon ? 0.15 : 0.3,
+        metalness: isNeon ? 0.5 : 0.35,
+        emissive: isNeon ? new THREE.Color().setHSL(hue2, 1, 0.4) : new THREE.Color(p.emissive),
+        emissiveIntensity: isNeon ? 1.1 : 0.35,
       })
     );
     stripe.position.x = -radius * 0.55;
+    stripe.userData.pipePart = 'stripe';
     g.add(stripe);
 
     // Rounded lip / cap at the gap edge only
     const capH = 0.42;
+    const capColor = isNeon ? new THREE.Color().setHSL(hue2, 1, 0.55) : new THREE.Color(p.cap);
     const cap = new THREE.Mesh(
       new THREE.CylinderGeometry(radius * 1.28, radius * 1.22, capH, segs),
       new THREE.MeshStandardMaterial({
-        color: p.cap,
-        roughness: 0.28,
-        metalness: 0.3,
-        emissive: p.emissive,
-        emissiveIntensity: 0.28,
+        color: capColor,
+        roughness: isNeon ? 0.15 : 0.28,
+        metalness: isNeon ? 0.5 : 0.3,
+        emissive: isNeon ? capColor.clone() : new THREE.Color(p.emissive),
+        emissiveIntensity: isNeon ? 0.85 : 0.28,
       })
     );
     cap.position.y = isTop ? -height / 2 + capH / 2 : height / 2 - capH / 2;
-    cap.castShadow = true;
+    cap.castShadow = !isNeon;
+    cap.userData.pipePart = 'cap';
     g.add(cap);
 
+    const rimColor = isNeon ? new THREE.Color().setHSL(h, 1, 0.6) : new THREE.Color(p.rim);
     const rim = new THREE.Mesh(
-      new THREE.TorusGeometry(radius * 1.08, 0.055, 8, segs),
+      new THREE.TorusGeometry(radius * 1.08, isNeon ? 0.07 : 0.055, 8, segs),
       new THREE.MeshStandardMaterial({
-        color: p.rim,
-        emissive: p.rim,
-        emissiveIntensity: 0.55,
-        roughness: 0.2,
+        color: rimColor,
+        emissive: rimColor,
+        emissiveIntensity: isNeon ? 1.2 : 0.55,
+        roughness: 0.15,
+        metalness: isNeon ? 0.4 : 0.2,
       })
     );
     rim.rotation.x = Math.PI / 2;
     rim.position.y = isTop ? -height / 2 + 0.04 : height / 2 - 0.04;
+    rim.userData.pipePart = 'rim';
     g.add(rim);
+
+    // Extra neon ring under lip
+    if (isNeon) {
+      const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(radius * 1.18, 0.035, 6, segs),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color().setHSL(hue2, 1, 0.6),
+          transparent: true,
+          opacity: 0.75,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ring2.rotation.x = Math.PI / 2;
+      ring2.position.y = isTop ? -height / 2 + 0.12 : height / 2 - 0.12;
+      ring2.userData.pipePart = 'ring2';
+      g.add(ring2);
+    }
 
     const mouth = new THREE.Mesh(
       new THREE.CylinderGeometry(radius * 0.72, radius * 0.72, 0.06, segs),
       new THREE.MeshStandardMaterial({
-        color: 0x0a1210,
+        color: isNeon ? 0x050510 : 0x0a1210,
         roughness: 0.9,
         metalness: 0.05,
-        emissive: 0x041510,
-        emissiveIntensity: 0.4,
+        emissive: isNeon ? new THREE.Color().setHSL(h, 1, 0.15) : new THREE.Color(0x041510),
+        emissiveIntensity: isNeon ? 0.6 : 0.4,
       })
     );
     mouth.position.y = isTop ? -height / 2 + 0.01 : height / 2 - 0.01;
+    mouth.userData.pipePart = 'mouth';
     g.add(mouth);
 
+    g.userData.neon = isNeon;
+    g.userData.neonHue = h;
+    g.userData.neonHue2 = hue2;
     return g;
   }
 
@@ -1174,6 +2800,11 @@ function spawnPipe(gapSize = CFG.pipeGap) {
 }
 
 // ─── Particles ────────────────────────────────────────────────────────────────
+function toColor(c) {
+  if (c instanceof THREE.Color) return c;
+  return new THREE.Color(c);
+}
+
 function spawnBurst(x, y, count, colors, speed = 4, life = 0.5) {
   const positions = new Float32Array(count * 3);
   const velocities = [];
@@ -1189,7 +2820,7 @@ function spawnBurst(x, y, count, colors, speed = 4, life = 0.5) {
       y: Math.sin(a) * sp,
       z: (Math.random() - 0.5) * sp * 0.5,
     });
-    const c = colors[i % colors.length].clone();
+    const c = toColor(colors[i % colors.length]);
     cols[i * 3] = c.r;
     cols[i * 3 + 1] = c.g;
     cols[i * 3 + 2] = c.b;
@@ -1293,6 +2924,219 @@ function updateParticles(dt) {
       p.geometry.dispose();
       p.material.dispose();
       particles.splice(i, 1);
+    }
+  }
+}
+
+function clearProjectiles() {
+  for (const p of projectiles) disposeProjectile(p);
+  projectiles = [];
+}
+
+/** Projectile: 'bolt' (default) or 'laser' beam */
+function spawnProjectile(x0, y0, x1, y1, onHit, style = 'bolt') {
+  if (style === 'laser') {
+    spawnLaserBeam(x0, y0, x1, y1, onHit);
+    return;
+  }
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(0.14, 12, 10),
+    new THREE.MeshBasicMaterial({ color: 0xffe080 })
+  );
+  const glow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.28, 12, 10),
+    new THREE.MeshBasicMaterial({
+      color: 0xff6a20,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    })
+  );
+  core.scale.set(1.6, 0.7, 0.7);
+  glow.scale.set(1.8, 0.9, 0.9);
+  core.position.set(x0, y0, 0.5);
+  glow.position.set(x0, y0, 0.45);
+  scene.add(glow);
+  scene.add(core);
+  projectiles.push({
+    kind: 'bolt',
+    mesh: core,
+    glow,
+    t: 0,
+    dur: 0.18 + Math.min(0.12, Math.abs(x1 - x0) * 0.03),
+    x0,
+    y0,
+    x1,
+    y1,
+    onHit,
+  });
+}
+
+function spawnLaserBeam(x0, y0, x1, y1, onHit) {
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const len = Math.max(0.4, Math.hypot(dx, dy));
+  const angle = Math.atan2(dy, dx);
+
+  // Outer glow cylinder (along X, then rotate)
+  const outer = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.09, len, 12, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0xff2080,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    })
+  );
+  // Inner hot core
+  const core = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.03, len, 10, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })
+  );
+  // Cylinder is Y-up; rotate to point along path
+  const midX = (x0 + x1) / 2;
+  const midY = (y0 + y1) / 2;
+  for (const m of [outer, core]) {
+    m.position.set(midX, midY, 0.55);
+    m.rotation.z = angle - Math.PI / 2;
+  }
+  // Muzzle flare
+  const flare = new THREE.Mesh(
+    new THREE.SphereGeometry(0.18, 12, 10),
+    new THREE.MeshBasicMaterial({
+      color: 0xff60a0,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })
+  );
+  flare.position.set(x0, y0, 0.55);
+  // Impact spark
+  const impact = new THREE.Mesh(
+    new THREE.SphereGeometry(0.22, 12, 10),
+    new THREE.MeshBasicMaterial({
+      color: 0xffe0ff,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })
+  );
+  impact.position.set(x1, y1, 0.55);
+
+  scene.add(outer);
+  scene.add(core);
+  scene.add(flare);
+  scene.add(impact);
+
+  projectiles.push({
+    kind: 'laser',
+    mesh: core,
+    glow: outer,
+    flare,
+    impact,
+    t: 0,
+    dur: 0.16,
+    x0,
+    y0,
+    x1,
+    y1,
+    onHit,
+    hitFired: false,
+  });
+}
+
+function disposeProjectile(p) {
+  const objs = [p.mesh, p.glow, p.flare, p.impact].filter(Boolean);
+  for (const o of objs) {
+    scene.remove(o);
+    try {
+      o.geometry?.dispose?.();
+      o.material?.dispose?.();
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
+function updateProjectiles(dt) {
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    p.t += dt;
+    const u = Math.min(1, p.t / p.dur);
+
+    if (p.kind === 'laser') {
+      // Beam stays locked on path; pulse + fade
+      const pulse = 0.75 + Math.sin(p.t * 60) * 0.25;
+      if (p.mesh) {
+        p.mesh.scale.set(pulse, 1, pulse);
+        p.mesh.material.opacity = 0.95 * (1 - u * 0.3);
+      }
+      if (p.glow) {
+        p.glow.scale.set(1.1 * pulse, 1, 1.1 * pulse);
+        p.glow.material.opacity = 0.5 * (1 - u * 0.5);
+      }
+      if (p.flare) {
+        p.flare.scale.setScalar(1 + Math.sin(p.t * 40) * 0.35);
+        p.flare.material.opacity = 0.9 * (1 - u);
+      }
+      if (p.impact) {
+        p.impact.scale.setScalar(0.8 + u * 1.4 + Math.sin(p.t * 50) * 0.2);
+        p.impact.material.opacity = 0.95 * (1 - u * 0.2);
+      }
+      // Hit early so pipe dies while beam still visible
+      if (!p.hitFired && u >= 0.2) {
+        p.hitFired = true;
+        if (typeof p.onHit === 'function') {
+          try {
+            p.onHit();
+          } catch (e) {
+            console.warn('laser onHit', e);
+          }
+        }
+      }
+      if (u >= 1) {
+        disposeProjectile(p);
+        projectiles.splice(i, 1);
+      }
+      continue;
+    }
+
+    // bolt
+    const e = 1 - (1 - u) * (1 - u);
+    const x = p.x0 + (p.x1 - p.x0) * e;
+    const y = p.y0 + (p.y1 - p.y0) * e + Math.sin(u * Math.PI) * 0.15;
+    p.mesh.position.set(x, y, 0.5);
+    p.glow.position.set(x, y, 0.45);
+    p.mesh.rotation.z = Math.atan2(p.y1 - p.y0, p.x1 - p.x0);
+    p.glow.rotation.z = p.mesh.rotation.z;
+    if (Math.random() < 0.55) {
+      try {
+        spawnBurst(x, y, 3, [0xffe080, 0xff8a4c, 0xffffff], 2.5, 0.22);
+      } catch (err) {
+        /* ignore */
+      }
+    }
+    if (u >= 1) {
+      const cb = p.onHit;
+      disposeProjectile(p);
+      projectiles.splice(i, 1);
+      if (typeof cb === 'function') {
+        try {
+          cb();
+        } catch (err) {
+          console.warn('projectile onHit', err);
+        }
+      }
     }
   }
 }
@@ -1540,10 +3384,10 @@ function releaseWakeLock() {
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
 function show(el) {
-  el.classList.remove('hidden');
+  if (el) el.classList.remove('hidden');
 }
 function hide(el) {
-  el.classList.add('hidden');
+  if (el) el.classList.add('hidden');
 }
 
 function flavorFor(n) {
@@ -1563,12 +3407,25 @@ function rewardById(id) {
   return REWARDS.find((r) => r.id === id);
 }
 
+function rewardImgSrc(reward) {
+  if (!reward?.img) return '';
+  // Encode path segments so spaces/special chars work in WebView
+  return reward.img.split('/').map(encodeURIComponent).join('/');
+}
+
 function fillRewardVisual(el, reward) {
   if (!el || !reward) return;
-  el.textContent = reward.emoji;
+  el.textContent = '';
   el.style.setProperty('--rv-a', reward.colorA);
   el.style.setProperty('--rv-b', reward.colorB);
   el.setAttribute('aria-label', reward.name);
+  const img = document.createElement('img');
+  img.src = rewardImgSrc(reward);
+  img.alt = reward.name;
+  img.draggable = false;
+  img.loading = 'lazy';
+  img.className = 'reward-img';
+  el.appendChild(img);
 }
 
 function updateSpinsUI() {
@@ -1623,19 +3480,22 @@ function grantSpin() {
 function buildRewardsGrid() {
   if (!rewardsGrid) return;
   rewardsGrid.innerHTML = '';
-  const ownedCount = ownedRewards.size;
+  const ownedCount = uniqueOwnedCount();
   if (rewardsCount) rewardsCount.textContent = `${ownedCount} / ${REWARDS.length}`;
   updateSpinsUI();
 
   REWARDS.forEach((reward) => {
-    const owned = ownedRewards.has(reward.id);
+    const owned = hasReward(reward.id);
+    const qty = invCount(reward.id);
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'reward-card ' + (owned ? 'owned' : 'locked');
     card.innerHTML = `
-      <div class="reward-visual" style="--rv-a:${reward.colorA};--rv-b:${reward.colorB}">${reward.emoji}</div>
+      <div class="reward-visual" style="--rv-a:${reward.colorA};--rv-b:${reward.colorB}"></div>
       <span class="reward-card-name">${owned ? reward.name : '???'}</span>
+      ${owned && qty > 1 ? `<span class="reward-qty">×${qty}</span>` : ''}
     `;
+    fillRewardVisual(card.querySelector('.reward-visual'), reward);
     card.addEventListener('click', (e) => {
       e.stopPropagation();
       openRewardDetail(reward);
@@ -1645,7 +3505,8 @@ function buildRewardsGrid() {
 }
 
 function openRewardDetail(reward) {
-  const owned = ownedRewards.has(reward.id);
+  const owned = hasReward(reward.id);
+  const qty = invCount(reward.id);
   fillRewardVisual(detailVisual, reward);
   if (!owned) {
     detailVisual.style.filter = 'grayscale(1) blur(4px) brightness(0.55)';
@@ -1656,7 +3517,7 @@ function openRewardDetail(reward) {
     detailVisual.style.filter = '';
     detailName.textContent = reward.name;
     detailDesc.textContent = reward.desc;
-    detailStatus.textContent = 'Collected ✓';
+    detailStatus.textContent = qty > 1 ? `Collected ×${qty} — trade extras at Junk Exchange` : 'Collected ✓ — trade at Junk Exchange';
   }
   hide(rewardsScreen);
   show(rewardDetailScreen);
@@ -1738,7 +3599,8 @@ function runVegasSpin() {
 
   // Pick winner
   const winner = REWARDS[Math.floor(Math.random() * REWARDS.length)];
-  const isNew = !ownedRewards.has(winner.id);
+  const prevCount = invCount(winner.id);
+  const isNew = prevCount === 0;
 
   // Ensure winner appears near end of strip
   const items = slotStrip._items || [];
@@ -1782,13 +3644,12 @@ function runVegasSpin() {
     pendingSpins = Math.max(0, pendingSpins - 1);
     saveSpins();
 
-    ownedRewards.add(winner.id);
-    saveOwned();
+    addReward(winner.id, 1);
 
     fillRewardVisual(spinResultVisual, winner);
     spinResultName.textContent = winner.name;
     spinResultDesc.textContent = winner.desc;
-    spinResultTag.textContent = isNew ? '✨ NEW COLLECTIBLE!' : 'Already in your pile';
+    spinResultTag.textContent = isNew ? '✨ NEW COLLECTIBLE!' : `Duplicate · now ×${invCount(winner.id)}`;
     spinResultTag.classList.toggle('dup', !isNew);
     show(spinResult);
     sfxSpinWin();
@@ -1825,7 +3686,7 @@ function closeSpinScreen() {
 function updateMenuStats() {
   bestStartEl.textContent = String(best);
   runsStartEl.textContent = String(runs);
-  if (lootStartEl) lootStartEl.textContent = `${ownedRewards.size}/${REWARDS.length}`;
+  if (lootStartEl) lootStartEl.textContent = `${uniqueOwnedCount()}/${REWARDS.length}`;
   updateSpinsUI();
 }
 
@@ -1888,10 +3749,18 @@ function syncSettingsUI() {
   optSfx.checked = settings.sfx;
   optMusic.checked = settings.music;
   optHaptics.checked = settings.haptics;
+  const side = settings.fireSide === 'left' ? 'left' : 'right';
+  if (optFireLeft) optFireLeft.classList.toggle('selected', side === 'left');
+  if (optFireRight) optFireRight.classList.toggle('selected', side === 'right');
+  applyFireBtnSide();
 }
 
 function applyTheme(themeId, { toast = false } = {}) {
   if (!THEMES[themeId]) themeId = 'meadow';
+  if (THEMES[themeId].requiresUnlock && !unlockedThemes.has(themeId)) {
+    showToast('🔒 Craft this at Junk Exchange', 1200);
+    return;
+  }
   settings.theme = themeId;
   saveSettings();
   const t = activeTheme();
@@ -1955,16 +3824,44 @@ function applyTheme(themeId, { toast = false } = {}) {
     b.visible = t.birds;
   });
 
-  // Live pipes recolor to match theme
+  const isCyber = t.id === 'cyberpunk';
+  setCyberpunkDecorVisible(isCyber);
+  // Dim natural props in cyberpunk so the city reads
+  trees.forEach((tr) => {
+    tr.visible = !isCyber;
+  });
+  grass.forEach((g) => {
+    g.visible = !isCyber;
+  });
+  hills.forEach((h, i) => {
+    h.material.color.setHex(t.hill[i % t.hill.length]);
+    if (!h.userData.baseScaleY) h.userData.baseScaleY = h.scale.y;
+    // Low dark land under skyline in cyberpunk
+    h.scale.y = isCyber ? h.userData.baseScaleY * 0.45 : h.userData.baseScaleY;
+  });
+
+  // Live pipes recolor to match theme (keep neon multi-hue if present)
   const p = t.pipe;
   for (const pipe of pipes) {
-    pipe.group.traverse((obj) => {
-      if (!obj.isMesh || !obj.material?.color) return;
-      if (obj.geometry?.type === 'CylinderGeometry' && obj.geometry.parameters?.radiusTop === CFG.pipeWidth / 2) {
-        obj.material.color.setHSL(p.h, p.s, p.l);
-        if (obj.material.emissive) obj.material.emissive.setHex(p.emissive);
-      }
-    });
+    // Force rebuild-ish: recolor by part tags when switching themes mid-run
+    if (p.neon) {
+      // leave individual neon hues; boost emissive if materials support it
+      pipe.group.traverse((obj) => {
+        if (!obj.isMesh || !obj.material) return;
+        if (obj.material.emissiveIntensity !== undefined && obj.userData.pipePart === 'shaft') {
+          obj.material.emissiveIntensity = p.emissiveIntensity ?? 0.95;
+        }
+      });
+    } else {
+      pipe.group.traverse((obj) => {
+        if (!obj.isMesh || !obj.material?.color) return;
+        if (obj.userData.pipePart === 'shaft') {
+          obj.material.color.setHSL(p.h, p.s, p.l);
+          if (obj.material.emissive) obj.material.emissive.setHex(p.emissive);
+          if (obj.material.emissiveIntensity !== undefined) obj.material.emissiveIntensity = 0.2;
+        }
+      });
+    }
   }
 
   buildSceneryList();
@@ -1975,25 +3872,298 @@ function buildSceneryList() {
   if (!sceneryList) return;
   sceneryList.innerHTML = '';
   Object.values(THEMES).forEach((t) => {
+    const locked = t.requiresUnlock && !unlockedThemes.has(t.id);
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'theme-card' + (settings.theme === t.id ? ' selected' : '');
+    btn.className =
+      'theme-card' +
+      (settings.theme === t.id ? ' selected' : '') +
+      (locked ? ' locked' : '');
     btn.dataset.theme = t.id;
     btn.innerHTML = `
       <span class="theme-emoji">${t.emoji}</span>
       <span class="theme-meta">
-        <span class="theme-name">${t.name}</span>
-        <span class="theme-blurb">${t.blurb}</span>
+        <span class="theme-name">${t.name}${locked ? ' 🔒' : ''}</span>
+        <span class="theme-blurb">${locked ? 'Craft at Junk Exchange' : t.blurb}</span>
       </span>
-      <span class="theme-check" aria-hidden="true">${settings.theme === t.id ? '✓' : ''}</span>
+      <span class="theme-check" aria-hidden="true">${settings.theme === t.id ? '✓' : locked ? '🔒' : ''}</span>
     `;
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (locked) {
+        showToast('🔒 Unlock at Junk Exchange', 1100);
+        return;
+      }
       applyTheme(t.id, { toast: true });
       haptic('light');
     });
     sceneryList.appendChild(btn);
   });
+}
+
+// ─── Junk Exchange UI ─────────────────────────────────────────────────────────
+function costLineHTML(cost) {
+  return cost
+    .map((c) => {
+      const r = rewardById(c.id);
+      const have = invCount(c.id);
+      const ok = have >= c.n;
+      const name = r ? r.name : c.id;
+      const img = r ? rewardImgSrc(r) : '';
+      return `<span class="cost-chip ${ok ? 'ok' : 'short'}">
+        ${img ? `<img src="${img}" alt="" class="cost-img" />` : ''}
+        <span>${name}${c.n > 1 ? ` ×${c.n}` : ''}</span>
+        <span class="cost-have">${have}/${c.n}</span>
+      </span>`;
+    })
+    .join('');
+}
+
+function setTradeTab(tab) {
+  tradeTab = tab;
+  if (tradeTabShop) tradeTabShop.classList.toggle('active', tab === 'shop');
+  if (tradeTabLoadout) tradeTabLoadout.classList.toggle('active', tab === 'loadout');
+  if (tradeShopList) tradeShopList.classList.toggle('hidden', tab !== 'shop');
+  if (tradeLoadout) tradeLoadout.classList.toggle('hidden', tab !== 'loadout');
+  if (tab === 'shop') buildTradeShop();
+  else buildTradeLoadout();
+}
+
+function buildTradeShop() {
+  if (!tradeShopList) return;
+  tradeShopList.innerHTML = '';
+  TRADES.forEach((trade) => {
+    const owned = unlockedGear.has(trade.id) || (trade.type === 'theme' && trade.themeId && unlockedThemes.has(trade.themeId));
+    const afford = canAfford(trade.cost);
+    const card = document.createElement('div');
+    card.className = 'trade-card' + (owned ? ' owned' : '') + (!owned && afford ? ' afford' : '');
+    const typeLabel =
+      trade.type === 'theme' ? 'Theme' : trade.type === 'weapon' ? 'Weapon' : SLOT_LABELS[trade.type] || trade.type;
+    card.innerHTML = `
+      <div class="trade-card-top">
+        <span class="trade-emoji">${trade.emoji}</span>
+        <div class="trade-meta">
+          <span class="trade-name">${trade.name}</span>
+          <span class="trade-type">${typeLabel}</span>
+        </div>
+      </div>
+      <p class="trade-blurb">${trade.blurb}</p>
+      <div class="trade-cost">${costLineHTML(trade.cost)}</div>
+      <button type="button" class="btn ${owned ? 'ghost' : afford ? 'primary' : 'ghost'} trade-craft-btn" ${owned || !afford ? 'disabled' : ''}>
+        ${owned ? 'Unlocked ✓' : afford ? 'Craft' : 'Need more loot'}
+      </button>
+    `;
+    const btn = card.querySelector('.trade-craft-btn');
+    if (!owned) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        craftTrade(trade);
+      });
+    }
+    tradeShopList.appendChild(card);
+  });
+}
+
+function craftTrade(trade) {
+  if (unlockedGear.has(trade.id) || (trade.type === 'theme' && trade.themeId && unlockedThemes.has(trade.themeId))) {
+    showToast('Already unlocked!', 900);
+    return;
+  }
+  if (!canAfford(trade.cost)) {
+    showToast('Not enough junk!', 900);
+    return;
+  }
+  if (!spendCost(trade.cost)) return;
+
+  if (trade.type === 'theme' && trade.themeId) {
+    unlockedThemes.add(trade.themeId);
+    saveUnlockedThemes();
+    unlockedGear.add(trade.id);
+    saveUnlockedGear();
+    applyTheme(trade.themeId, { toast: false });
+    showToast(`${trade.emoji} ${trade.name} unlocked!`, 1400);
+  } else {
+    unlockedGear.add(trade.id);
+    saveUnlockedGear();
+    // Auto-equip new gear
+    if (GEAR_SLOTS.includes(trade.type)) {
+      equipped[trade.type] = trade.id;
+      saveEquipped();
+      applyLoadoutVisuals();
+    }
+    showToast(`${trade.emoji} Crafted ${trade.name}!`, 1400);
+  }
+  sfxMilestone();
+  haptic('success');
+  burstConfetti();
+  buildTradeShop();
+  buildTradeLoadout();
+  updateMenuStats();
+  buildRewardsGrid();
+}
+
+function buildTradeLoadout() {
+  if (!tradeLoadout) return;
+  tradeLoadout.innerHTML = '';
+  GEAR_SLOTS.forEach((slot) => {
+    const section = document.createElement('div');
+    section.className = 'loadout-section';
+    const options = TRADES.filter((t) => t.type === slot && unlockedGear.has(t.id));
+    let optsHTML = `<button type="button" class="loadout-opt ${!equipped[slot] ? 'selected' : ''}" data-id="">None</button>`;
+    options.forEach((t) => {
+      optsHTML += `<button type="button" class="loadout-opt ${equipped[slot] === t.id ? 'selected' : ''}" data-id="${t.id}">
+        <span>${t.emoji}</span> ${t.name}
+      </button>`;
+    });
+    if (options.length === 0) {
+      optsHTML += `<p class="hint tiny">Craft a ${SLOT_LABELS[slot].toLowerCase()} in the Craft tab.</p>`;
+    }
+    section.innerHTML = `
+      <h3 class="loadout-title">${SLOT_LABELS[slot]}</h3>
+      <div class="loadout-opts">${optsHTML}</div>
+    `;
+    section.querySelectorAll('.loadout-opt').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id || null;
+        equipped[slot] = id || null;
+        saveEquipped();
+        applyLoadoutVisuals();
+        buildTradeLoadout();
+        haptic('light');
+        showToast(id ? `Equipped ${tradeById(id)?.name || ''}` : `${SLOT_LABELS[slot]} cleared`, 800);
+      });
+    });
+    tradeLoadout.appendChild(section);
+  });
+
+  // Theme note
+  const note = document.createElement('p');
+  note.className = 'hint tiny';
+  note.textContent = 'Themes: equip Cyberpunk from Scenery after crafting it.';
+  tradeLoadout.appendChild(note);
+}
+
+function openTradeScreen() {
+  hide(startScreen);
+  hide(settingsScreen);
+  hide(sceneryScreen);
+  hide(rewardsScreen);
+  hide(rewardDetailScreen);
+  setTradeTab(tradeTab || 'shop');
+  show(tradeScreen);
+}
+
+function closeTradeScreen() {
+  hide(tradeScreen);
+  show(startScreen);
+  updateMenuStats();
+  applyLoadoutVisuals();
+}
+
+function destroyPipePair(pipe) {
+  if (!pipe) return;
+  const idx = pipes.indexOf(pipe);
+  if (idx < 0) return;
+  if (!pipe.scored) {
+    pipe.scored = true;
+    onScore(pipe);
+  }
+  try {
+    pipe.dispose();
+  } catch (e) {
+    /* ignore dispose errors */
+  }
+  pipes.splice(idx, 1);
+}
+
+function fireWeapon() {
+  if (state !== State.PLAYING) return;
+  const w = equippedWeaponTrade();
+  if (!w) {
+    showToast('No weapon equipped', 800);
+    return;
+  }
+  if (weaponShots <= 0) {
+    showToast('Out of shots!', 800);
+    haptic('medium');
+    return;
+  }
+
+  // Prefer nearest pipe ahead; else nearest any on-screen pipe
+  let target = null;
+  let bestX = Infinity;
+  for (const p of pipes) {
+    if (p.x > CFG.goatX - 0.5 && p.x < bestX) {
+      bestX = p.x;
+      target = p;
+    }
+  }
+  if (!target) {
+    for (const p of pipes) {
+      if (p.x > -8 && p.x < 10 && Math.abs(p.x - CFG.goatX) < bestX) {
+        bestX = Math.abs(p.x - CFG.goatX);
+        target = p;
+      }
+    }
+  }
+  if (!target) {
+    showToast('No pipes in range!', 800);
+    return;
+  }
+
+  weaponShots -= 1;
+  refreshWeaponHUD();
+
+  const muzzleX = CFG.goatX + 0.55;
+  const muzzleY = goat.y - 0.02;
+  const style = w.projectile === 'laser' ? 'laser' : 'bolt';
+  const flashCols = style === 'laser' ? [0xff2080, 0xffffff, 0xff60c0] : [0xffe080, 0xff8a4c, 0xffffff];
+  spawnBurst(muzzleX, muzzleY, 10, flashCols, 5, 0.28);
+  if (style === 'laser') {
+    playTone({ freq: 880, type: 'sawtooth', dur: 0.07, gain: 0.05 });
+    playTone({ freq: 1320, type: 'square', dur: 0.1, gain: 0.035, delay: 0.02 });
+    playTone({ freq: 220, type: 'triangle', dur: 0.12, gain: 0.04, delay: 0.04 });
+  } else {
+    playTone({ freq: 220, type: 'sawtooth', dur: 0.08, gain: 0.06 });
+    playTone({ freq: 140, type: 'square', dur: 0.1, gain: 0.04, delay: 0.03 });
+  }
+  haptic('medium');
+
+  const hitPipe = target;
+  const aimX = target.x;
+  const aimY = target.gapCenter;
+
+  spawnProjectile(
+    muzzleX,
+    muzzleY,
+    aimX,
+    aimY,
+    () => {
+      const stillThere = pipes.indexOf(hitPipe) >= 0;
+      const ix = stillThere ? hitPipe.x : aimX;
+      const iy = stillThere ? hitPipe.gapCenter : aimY;
+
+      spawnDeathBurst(ix, iy);
+      spawnScoreSpark(ix, iy);
+      shake = Math.max(shake, 0.4);
+      flash('score');
+      if (style === 'laser') {
+        playTone({ freq: 240, type: 'sawtooth', dur: 0.1, gain: 0.05 });
+        playTone({ freq: 90, type: 'square', dur: 0.14, gain: 0.04, delay: 0.04 });
+      } else {
+        playTone({ freq: 180, type: 'sawtooth', dur: 0.12, gain: 0.07 });
+        playTone({ freq: 90, type: 'square', dur: 0.18, gain: 0.05, delay: 0.05 });
+        playTone({ freq: 520, type: 'triangle', dur: 0.08, gain: 0.04, delay: 0.1 });
+      }
+      haptic('heavy');
+
+      if (stillThere) destroyPipePair(hitPipe);
+
+      if (weaponShots <= 0) showToast('Weapon spent!', 900);
+    },
+    style
+  );
 }
 
 // ─── Game flow ────────────────────────────────────────────────────────────────
@@ -2006,6 +4176,7 @@ function clearPipesAndParticles() {
     p.material.dispose();
   }
   particles = [];
+  clearProjectiles();
 }
 
 function resetWorld() {
@@ -2045,8 +4216,10 @@ function hideAllMenus() {
   hide(rewardsScreen);
   hide(rewardDetailScreen);
   hide(spinScreen);
+  hide(tradeScreen);
   hide(readyHint);
   hide(tutorialEl);
+  hide(fireBtn);
 }
 
 function goMenu() {
@@ -2056,6 +4229,7 @@ function goMenu() {
   hideAllMenus();
   show(startScreen);
   updateMenuStats();
+  applyLoadoutVisuals();
   releaseWakeLock();
 }
 
@@ -2065,6 +4239,8 @@ function startGame() {
   state = State.PLAYING;
   resetWorld();
   spinsEarnedThisRun = 0;
+  const w = equippedWeaponTrade();
+  weaponShots = w && w.shots ? w.shots : 0;
   hideAllMenus();
   show(hud);
   hide(spinsPill);
@@ -2073,6 +4249,8 @@ function startGame() {
   goat.vy = CFG.flapImpulse * 0.3;
   runStarted = false;
   if (showTutorial) show(tutorialEl);
+  applyLoadoutVisuals();
+  refreshWeaponHUD();
   requestWakeLock();
   haptic('light');
 }
@@ -2174,7 +4352,7 @@ document.addEventListener(
   'touchmove',
   (e) => {
     const scrollable = e.target?.closest?.(
-      '.rewards-grid, .scenery-list, .scrollable, .panel.rewards-panel, .panel.scenery-panel'
+      '.rewards-grid, .scenery-list, .scrollable, .trade-list, .panel.rewards-panel, .panel.scenery-panel, .panel.trade-panel'
     );
     if (scrollable) {
       // If the element (or a parent list) can actually scroll, let it
@@ -2208,6 +4386,10 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     if (state === State.PAUSED) resumeGame();
     else if (state === State.PLAYING) flap();
+  }
+  if ((e.code === 'KeyF' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') && state === State.PLAYING) {
+    e.preventDefault();
+    fireWeapon();
   }
 });
 
@@ -2259,8 +4441,46 @@ sceneryBtn.addEventListener('click', (e) => {
   hide(startScreen);
   hide(settingsScreen);
   hide(rewardsScreen);
+  hide(tradeScreen);
   show(sceneryScreen);
 });
+if (tradeBtn) {
+  tradeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openTradeScreen();
+  });
+}
+if (tradeClose) {
+  tradeClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeTradeScreen();
+  });
+}
+if (tradeTabShop) {
+  tradeTabShop.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setTradeTab('shop');
+  });
+}
+if (tradeTabLoadout) {
+  tradeTabLoadout.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setTradeTab('loadout');
+  });
+}
+if (fireBtn) {
+  const onFirePress = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    fireWeapon();
+  };
+  // pointerdown is more reliable than click on mobile WebViews
+  fireBtn.addEventListener('pointerdown', onFirePress);
+  fireBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+}
 sceneryClose.addEventListener('click', (e) => {
   e.stopPropagation();
   hide(sceneryScreen);
@@ -2321,9 +4541,30 @@ optHaptics.addEventListener('change', () => {
   if (settings.haptics) haptic('medium');
 });
 
+function setFireSide(side) {
+  settings.fireSide = side === 'left' ? 'left' : 'right';
+  saveSettings();
+  syncSettingsUI();
+  refreshWeaponHUD();
+  haptic('light');
+  showToast(settings.fireSide === 'left' ? 'Shoot button: left' : 'Shoot button: right', 900);
+}
+if (optFireLeft) {
+  optFireLeft.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setFireSide('left');
+  });
+}
+if (optFireRight) {
+  optFireRight.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setFireSide('right');
+  });
+}
+
 shareBtn.addEventListener('click', async (e) => {
   e.stopPropagation();
-  const text = `I scored ${score} in Slappy Goat! 🐐 Best: ${best} · Loot ${ownedRewards.size}/${REWARDS.length}`;
+  const text = `I scored ${score} in Slappy Goat! 🐐 Best: ${best} · Loot ${uniqueOwnedCount()}/${REWARDS.length}`;
   try {
     if (navigator.share) await navigator.share({ title: 'Slappy Goat', text });
     else if (navigator.clipboard) {
@@ -2415,6 +4656,8 @@ function updateGoat(dt) {
     goat.mesh.rotation.x += dt * 4;
     if (goat.y < CFG.groundY - 2) goat.mesh.visible = false;
   }
+
+  updateClothingPhysics(dt);
 }
 
 function onScore(pipe) {
@@ -2464,6 +4707,30 @@ function updatePipes(dt) {
     const p = pipes[i];
     p.x -= CFG.pipeSpeed * speedBoost * dt;
     p.group.position.x = p.x;
+
+    // Cyberpunk neon pulse on emissive parts
+    if (p.group.userData?.neon || p.top?.userData?.neon) {
+      const pulse = 0.75 + 0.35 * Math.sin(time * 4.5 + p.x * 0.4);
+      const pulse2 = 0.55 + 0.4 * Math.sin(time * 6.2 + p.x * 0.55);
+      for (const side of [p.top, p.bot]) {
+        if (!side) continue;
+        side.traverse((obj) => {
+          if (!obj.isMesh || !obj.material) return;
+          const part = obj.userData.pipePart;
+          if (part === 'shaft' && obj.material.emissiveIntensity !== undefined) {
+            obj.material.emissiveIntensity = 0.7 + pulse * 0.55;
+          } else if (part === 'rim' && obj.material.emissiveIntensity !== undefined) {
+            obj.material.emissiveIntensity = 0.9 + pulse2 * 0.6;
+          } else if (part === 'halo' && obj.material.opacity !== undefined) {
+            obj.material.opacity = 0.12 + pulse * 0.18;
+          } else if (part === 'ring2' && obj.material.opacity !== undefined) {
+            obj.material.opacity = 0.45 + pulse2 * 0.4;
+          } else if (part === 'stripe' && obj.material.emissiveIntensity !== undefined) {
+            obj.material.emissiveIntensity = 0.8 + pulse2 * 0.5;
+          }
+        });
+      }
+    }
 
     if (!p.nearMissed && nearMissCooldown <= 0 && p.isNearMiss(goat.y, CFG.goatRadius)) {
       p.nearMissed = true;
@@ -2629,6 +4896,9 @@ function updateEnvironment(dt) {
     fireflies.material.size = 0.1 + Math.sin(time * 3) * 0.03;
   }
 
+  updateCity(dt, playing);
+  updateRocket(dt, theme);
+
   // Camera
   if (shake > 0) {
     shake = Math.max(0, shake - dt);
@@ -2666,6 +4936,7 @@ function frame() {
   updatePipes(dt);
   updateEnvironment(dt);
   updateParticles(dt);
+  updateProjectiles(dt);
   renderer.render(scene, camera);
 }
 
@@ -2680,14 +4951,50 @@ createClouds();
 createBirds();
 createBalloons();
 createFireflies();
+createCyberpunkCity();
+createRocket();
 createGoat();
+// Drop premium theme if somehow selected without unlock
+if (THEMES[settings.theme]?.requiresUnlock && !unlockedThemes.has(settings.theme)) {
+  settings.theme = 'meadow';
+  saveSettings();
+}
+// Drop equipped items that are no longer unlocked
+for (const slot of GEAR_SLOTS) {
+  if (equipped[slot] && !unlockedGear.has(equipped[slot])) equipped[slot] = null;
+}
+saveEquipped();
 applyTheme(settings.theme);
+applyLoadoutVisuals();
 
 syncSettingsUI();
 buildSceneryList();
 updateMenuStats();
 goMenu();
 frame();
+
+// Optional deep-link for docs/automation: ?screen=menu|rewards|trade|scenery|play
+(() => {
+  try {
+    const screen = new URLSearchParams(location.search).get('screen');
+    if (!screen || screen === 'menu') return;
+    setTimeout(() => {
+      if (screen === 'rewards') openRewardsScreen('menu');
+      else if (screen === 'trade' || screen === 'loadout') {
+        openTradeScreen();
+        if (screen === 'loadout') setTradeTab('loadout');
+      } else if (screen === 'scenery') {
+        hide(startScreen);
+        buildSceneryList();
+        show(sceneryScreen);
+      } else if (screen === 'play') {
+        startGame();
+      }
+    }, 400);
+  } catch {
+    /* ignore */
+  }
+})();
 
 // Warm audio graph on first gesture anywhere
 window.addEventListener(
